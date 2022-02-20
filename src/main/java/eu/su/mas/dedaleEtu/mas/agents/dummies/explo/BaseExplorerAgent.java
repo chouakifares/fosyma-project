@@ -16,7 +16,6 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     private static final long serialVersionUID = -7969469610241668140L;
     private MapRepresentation myMap;
 
-
     /**
      * This method is automatically called when "agent".start() is executed.
      * Consider that Agent is launched for the first time.
@@ -24,9 +23,23 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
      *	 		2) add the behaviours
      *
      */
-    protected void setup(){
 
+
+
+    public MapRepresentation getMap(){
+        return this.myMap;
+    }
+
+    public void setMap(MapRepresentation m){
+        this.myMap = m;
+    }
+
+    protected void setup(){
         super.setup();
+
+        myMap = new MapRepresentation();
+
+
 
         //get the parameters added to the agent at creation (if any)
         final Object[] args = getArguments();
