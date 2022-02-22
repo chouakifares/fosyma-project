@@ -20,5 +20,8 @@ public class SendACKBehaviour extends OneShotBehaviour {
         msg.setSender(this.myAgent.getAID());
         msg.setProtocol("token");
         msg.addReceiver(new AID(receiver,AID.ISLOCALNAME));
+
+        //Mandatory to use this method (it takes into account the environment to decide if someone is reachable or not)
+        ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
     }
 }
