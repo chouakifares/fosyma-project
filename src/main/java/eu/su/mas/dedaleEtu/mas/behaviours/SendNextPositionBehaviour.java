@@ -29,5 +29,6 @@ public class SendNextPositionBehaviour extends OneShotBehaviour {
         String sg = nextNode;
         msg.setContent(sg);
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
+        ((BaseExplorerAgent)this.myAgent).deleteBehaviour("sendNext");
     }
 }

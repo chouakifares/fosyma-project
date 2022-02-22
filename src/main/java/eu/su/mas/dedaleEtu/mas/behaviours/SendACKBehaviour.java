@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.dummies.explo.BaseExplorerAgent;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -23,5 +24,11 @@ public class SendACKBehaviour extends OneShotBehaviour {
 
         //Mandatory to use this method (it takes into account the environment to decide if someone is reachable or not)
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
+        ReceiveTopoBehaviour receiveTopo = new ReceiveTopoBehaviour(this.myAgent);
+        ShareTopoBehaviour shareTopo = new ShareTopoBehaviour((AbstractDedaleAgent) this.myAgent, receiver);
+//        this.myAgent.addBehaviour(receiveTopo);
+//        ((BaseExplorerAgent)this.myAgent).addBehaviourToMap("receiveTopo", receiveTopo);
+//        this.myAgent.addBehaviour(shareTopo);
+//        ((BaseExplorerAgent)this.myAgent).addBehaviourToMap("shareTopo", shareTopo);
     }
 }

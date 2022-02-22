@@ -5,6 +5,9 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class SendExplorerMessageBehavior extends SimpleBehaviour {
+
+
+
     MessageTemplate templateHello=MessageTemplate.and(
             MessageTemplate.MatchProtocol("hello"),
             MessageTemplate.MatchPerformative(ACLMessage.INFORM));

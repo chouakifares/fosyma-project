@@ -8,6 +8,7 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
+import org.glassfish.pfl.basic.fsm.Guard;
 
 import java.io.IOException;
 
@@ -33,5 +34,6 @@ public class ShareTopoBehaviour extends OneShotBehaviour {
             e.printStackTrace();
         }
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
+        ((BaseExplorerAgent)this.myAgent).deleteBehaviour("shareTopo");
     }
 }

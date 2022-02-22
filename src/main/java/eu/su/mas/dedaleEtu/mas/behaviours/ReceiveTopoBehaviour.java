@@ -40,7 +40,13 @@ public class ReceiveTopoBehaviour extends OneShotBehaviour {
             }
 
             currentMap.mergeMap(sgreceived);
-            ((BaseExplorerAgent) this.myAgent).addBehaviour(new SendNextPositionBehaviour((AbstractDedaleAgent) this.myAgent, sender));
+            ReceiveNextPosBehaviour receiveNext = new ReceiveNextPosBehaviour((AbstractDedaleAgent) this.myAgent);
+            SendNextPositionBehaviour sendNext = new SendNextPositionBehaviour((AbstractDedaleAgent) this.myAgent, sender);
+
+            ((BaseExplorerAgent) this.myAgent).addBehaviour(sendNext);
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToMap("sendNext", sendNext);
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToMap("receiveNext", receiveNext);
+            ((BaseExplorerAgent)this.myAgent).deleteBehaviour("receiveTopo");
 
 
 
