@@ -83,13 +83,17 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			if (!this.myMap.hasOpenNode()){
 				((BaseExplorerAgent)this.myAgent).endBehaviour(behaviourName);
 				System.out.println(this.myAgent.getLocalName()+" - Exploration successufully done, behaviour removed.");
+				((BaseExplorerAgent) this.myAgent).explorationDone();
 			}else{
 				//4) select next move.
 				//4.1 If there exist one open node directly reachable, go for it,
 				//	 otherwise choose one from the openNode list, compute the shortestPath and go for it
 				if (nextNode==null){
 					if(((BaseExplorerAgent)this.myAgent).getCurrentDest()!=null) {
-						nextNode = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest()).get(0);//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
+						List<String> next = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest());
+						if(next.size() > 0) {
+							nextNode = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest()).get(0);//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
+						}
 					}
 				}
 			if(((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(behaviourName) && nextNode != null) {

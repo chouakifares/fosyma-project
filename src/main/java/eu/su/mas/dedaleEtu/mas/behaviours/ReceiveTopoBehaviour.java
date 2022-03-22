@@ -74,6 +74,7 @@ public class ReceiveTopoBehaviour extends SimpleBehaviour {
                         ExploCoopBehaviour.behaviourName,
                         new ExploCoopBehaviour((AbstractDedaleAgent) this.myAgent, ((BaseExplorerAgent) this.myAgent).getMap())
                 );
+                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
                         RestoreSendHelloBehaviour.behaviourName,
                         new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1000)

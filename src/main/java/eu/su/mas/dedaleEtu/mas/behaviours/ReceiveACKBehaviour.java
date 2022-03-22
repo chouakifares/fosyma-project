@@ -28,8 +28,6 @@ public class ReceiveACKBehaviour extends SimpleBehaviour {
             // arreter l'envoi du hello
             ((BaseExplorerAgent)this.myAgent).endBehaviour(SendHelloBehaviour.behaviourName);
             ((BaseExplorerAgent)this.myAgent).endBehaviour(ExploCoopBehaviour.behaviourName);
-            ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
-            ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreMoveBehaviour.behaviourName);
             if(((BaseExplorerAgent) this.myAgent).getBehaviour(SendACKBehaviour.behaviourName) !=  null) {
                 ((BaseExplorerAgent) this.myAgent).endBehaviour(SendACKBehaviour.behaviourName);
             }
