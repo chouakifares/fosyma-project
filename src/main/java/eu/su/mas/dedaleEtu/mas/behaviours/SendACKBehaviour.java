@@ -8,27 +8,27 @@ import jade.lang.acl.ACLMessage;
 
 public class SendACKBehaviour extends OneShotBehaviour {
     private String receiver;
-
-
+    public static String behaviourName = "sendACK" ;
+    public static String protocol = "myACKToken";
     public SendACKBehaviour(AbstractDedaleAgent a, String receiver){
         super(a);
         this.receiver = receiver;
     }
     @Override
     public void action() {
-        //A message is defined by : a performative, a sender, a set of receivers, (a protocol),(a content (and/or contentOBject))
-        ACLMessage msg=new ACLMessage(ACLMessage.INFORM);
+        ACLMessage msg=new ACLMessage(ACLMessage.CONFIRM);
+        if(((BaseExplorerAgent)this.myAgent).getBehaviour(ReceiveACKBehaviour.behaviourName)== null ||
+                !((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(ReceiveACKBehaviour.behaviourName)) {
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                    ReceiveACKBehaviour.behaviourName,
+                    new ReceiveACKBehaviour((AbstractDedaleAgent) this.myAgent)
+            );
+        }
         msg.setSender(this.myAgent.getAID());
-        msg.setProtocol("token");
-        msg.addReceiver(new AID(receiver,AID.ISLOCALNAME));
-
-        //Mandatory to use this method (it takes into account the environment to decide if someone is reachable or not)
+        msg.setProtocol(protocol);
+        msg.addReceiver(new AID(this.receiver,AID.ISLOCALNAME));
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
-        ReceiveTopoBehaviour receiveTopo = new ReceiveTopoBehaviour(this.myAgent);
-        ShareTopoBehaviour shareTopo = new ShareTopoBehaviour((AbstractDedaleAgent) this.myAgent, receiver);
-//        this.myAgent.addBehaviour(receiveTopo);
-//        ((BaseExplorerAgent)this.myAgent).addBehaviourToMap("receiveTopo", receiveTopo);
-//        this.myAgent.addBehaviour(shareTopo);
-//        ((BaseExplorerAgent)this.myAgent).addBehaviourToMap("shareTopo", shareTopo);
+        System.out.println("SendACK:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+        ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
     }
 }

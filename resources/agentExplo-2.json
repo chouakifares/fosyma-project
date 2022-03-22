@@ -14,7 +14,7 @@
   "agentType":"agentExplo",
   "agentName": "Ulysse2",
   "communicationRange": 3,
-  "initialLocation": "free",
+  "initialLocation": "0_0",
   "backPackCapacityGold": -1,
   "backPackCapacityDiamond":-1, 
   "detectionRadius": 0,

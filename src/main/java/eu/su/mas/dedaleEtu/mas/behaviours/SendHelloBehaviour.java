@@ -1,41 +1,52 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
+import eu.su.mas.dedaleEtu.mas.agents.dummies.explo.BaseExplorerAgent;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
-import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
 
-public class SendHelloBehaviour extends TickerBehaviour {
+public class SendHelloBehaviour extends SimpleBehaviour {
 
     ArrayList<String> receivers;
-    private boolean finished;
-
+    public static String behaviourName = "sendHello";
+    public static String protocol = "sendHello";
     public SendHelloBehaviour (final Agent myagent, ArrayList<String> receivers) {
-
-        super(myagent, 2000);
+        super(myagent);
         this.receivers=receivers;
     }
 
     @Override
-    public void onTick() {
-
-        //A message is defined by : a performative, a sender, a set of receivers, (a protocol),(a content (and/or contentOBject))
+    public void action() {
         ACLMessage msg=new ACLMessage(ACLMessage.INFORM);
         msg.setSender(this.myAgent.getAID());
-        msg.setProtocol("sendHello");
+        msg.setProtocol(protocol);
+        ((BaseExplorerAgent) this.myAgent).endBehaviour(ExploCoopBehaviour.behaviourName);
+        ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
         for (String agentName: receivers){
             msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
         }
-        //Mandatory to use this method (it takes into account the environment to decide if someone is reachable or not)
+        ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                ReceiveHelloBehaviour.behaviourName,
+                new ReceiveHelloBehaviour((AbstractDedaleAgent) this.myAgent)
+        );
+        ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                RestoreMoveBehaviour.behaviourName,
+                new RestoreMoveBehaviour((AbstractDedaleAgent) this.myAgent, 2000)
+        );
+        ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                RestoreSendHelloBehaviour.behaviourName,
+                new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 3000)
+        );
+        System.out.println("SendHello:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
-//        this.myAgent.addBehaviour(new ReceiveACKBehaviour((AbstractDedaleAgent) this.myAgent));
-//        this.myAgent.doWait(1000);
 
     }
 
+    public boolean done(){
+        return !((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(behaviourName);
+    }
 }

@@ -6,10 +6,11 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+
 public class ReceiveACKBehaviour extends SimpleBehaviour {
 
     private boolean finished = false;
-
+    public static String behaviourName = "receiveACK";
 
     public ReceiveACKBehaviour(AbstractDedaleAgent myagent){
         super(myagent);
@@ -19,29 +20,39 @@ public class ReceiveACKBehaviour extends SimpleBehaviour {
 
     @Override
     public void action() {
-        MessageTemplate templateHello=MessageTemplate.and(
-                MessageTemplate.MatchProtocol("token"),
-                MessageTemplate.MatchPerformative(ACLMessage.INFORM));
-        ACLMessage msgToken=this.myAgent.receive(templateHello);
-
+        MessageTemplate templateACK=MessageTemplate.and(
+                MessageTemplate.MatchProtocol(SendACKBehaviour.protocol),
+                MessageTemplate.MatchPerformative(ACLMessage.CONFIRM));
+        ACLMessage msgToken=this.myAgent.receive(templateACK);
         if(msgToken != null) {
             // arreter l'envoi du hello
-            ((BaseExplorerAgent)this.myAgent).deleteBehaviour("sendHello");
-            ((BaseExplorerAgent)this.myAgent).deleteBehaviour("move");
+            ((BaseExplorerAgent)this.myAgent).endBehaviour(SendHelloBehaviour.behaviourName);
+            ((BaseExplorerAgent)this.myAgent).endBehaviour(ExploCoopBehaviour.behaviourName);
+            ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
+            ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreMoveBehaviour.behaviourName);
+            if(((BaseExplorerAgent) this.myAgent).getBehaviour(SendACKBehaviour.behaviourName) !=  null) {
+                ((BaseExplorerAgent) this.myAgent).endBehaviour(SendACKBehaviour.behaviourName);
+            }
             // ajouter l'envoi et la reception de la map
-            ReceiveTopoBehaviour receiveTopo = new ReceiveTopoBehaviour(this.myAgent);
-            ShareTopoBehaviour shareTopo = new ShareTopoBehaviour((AbstractDedaleAgent) this.myAgent, msgToken.getSender().toString());
+            if(!((BaseExplorerAgent) this.myAgent).isBusy()){
+                ((BaseExplorerAgent) this.myAgent).setBusy(true);
+                ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                        ShareTopoBehaviour.behaviourName,
+                        new ShareTopoBehaviour(
+                                (AbstractDedaleAgent) this.myAgent,
+                                msgToken.getSender().getLocalName()
+                        )
+                );
+            }
+            System.out.println("ReceiveACK:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
 
-//            this.myAgent.addBehaviour(receiveTopo);
-//            ((BaseExplorerAgent)this.myAgent).addBehaviourToMap("receiveTopo", receiveTopo);
-//            this.myAgent.addBehaviour(shareTopo);
-//            ((BaseExplorerAgent)this.myAgent).addBehaviourToMap("shareTopo", shareTopo);
         }
     }
 
     @Override
     public boolean done() {
-        return false;
+        return !((BaseExplorerAgent) this.myAgent).getExploBehaviourStatus(behaviourName);
     }
 
 }

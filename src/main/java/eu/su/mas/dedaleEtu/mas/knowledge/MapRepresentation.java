@@ -156,7 +156,23 @@ public class MapRepresentation implements Serializable {
 		return shortestPath;
 	}
 
-	public List<String> getShortestPathToClosestOpenNode(String myPosition) {
+	public Couple<String , Integer> getSecondClosestOpenNode(String myPosition){
+		List<String> opennodes=getOpenNodes();
+
+		//2) select the closest one
+		List<Couple<String,Integer>> lc=
+				opennodes.stream()
+						.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
+						.collect(Collectors.toList());
+
+		List<Couple<String,Integer>> sortedOpen=lc.stream().sorted(Comparator.comparing(Couple::getRight)).collect(Collectors.toList());
+		//3) Compute shorterPath
+		if(sortedOpen.size()>1)
+			return sortedOpen.get(1);
+		return null;
+	}
+
+	public Couple<String , Integer> getClosestOpenNode(String myPosition) {
 		//1) Get all openNodes
 		List<String> opennodes=getOpenNodes();
 
@@ -168,8 +184,11 @@ public class MapRepresentation implements Serializable {
 
 		Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
 		//3) Compute shorterPath
-
-		return getShortestPath(myPosition,closest.get().getLeft());
+		if(closest !=null && closest.isPresent()) {
+			return closest.get();
+		}else{
+			return null;
+		}
 	}
 
 
