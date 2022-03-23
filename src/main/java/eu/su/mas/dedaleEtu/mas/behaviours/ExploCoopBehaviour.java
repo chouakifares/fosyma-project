@@ -12,6 +12,7 @@ import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
 
+import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.behaviours.SimpleBehaviour;
 
 
@@ -104,6 +105,17 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 			}
 		}
+		for (Couple <Observation, Integer> o: lobs.get(0).getRight()){
+			switch (o.getLeft()){
+				case DIAMOND: case GOLD:
+					// ADD THE TREASURE TO THE LIST
+					Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight());
+					((BaseExplorerAgent)myAgent).addTreasure(t);
+					((AbstractDedaleAgent)myAgent).pick();
+			}
+		}
+
+
 
 		}
 	}

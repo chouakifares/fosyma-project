@@ -12,6 +12,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.ExploCoopBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.SendHelloBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
+import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.behaviours.Behaviour;
 
 public class BaseExplorerAgent extends AbstractDedaleAgent {
@@ -29,7 +30,7 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     // list of all the behavior that we use during the exploration phase
     public HashMap<String, HashMap> ExploBehaviourmap = new HashMap<String, HashMap>();
     private List<String> list_agentNames=new ArrayList<String>();
-
+    private List<Treasure> treasures = new ArrayList<Treasure>();
 
 
 
@@ -130,5 +131,11 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void explorationDone() {
         this.explorationDone = true;
+    }
+
+    public void addTreasure(Treasure t){
+        if (! treasures.contains(t)){
+            treasures.add(t);
+        }
     }
 }
