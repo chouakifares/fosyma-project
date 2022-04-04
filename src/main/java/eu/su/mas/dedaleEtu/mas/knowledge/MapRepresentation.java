@@ -56,6 +56,15 @@ public class MapRepresentation implements Serializable {
 	private String nodeStyle_agent = "node.open {"+"fill-color: blue;"+"}";
 	private String nodeStyle=defaultNodeStyle+nodeStyle_agent+nodeStyle_open;
 
+	public boolean isContainsDiamond() {
+		return containsDiamond;
+	}
+
+	public void setContainsDiamond(boolean containsDiamond) {
+		this.containsDiamond = containsDiamond;
+	}
+
+	private boolean containsDiamond;
 	private Graph g; //data structure non serializable
 	private Viewer viewer; //ref to the display,  non serializable
 	private Integer nbEdges;//used to generate the edges ids

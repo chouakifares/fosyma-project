@@ -1,22 +1,22 @@
 [
 { 
-  "agentType":"agentExplo",
+  "agentType":"agentCollect",
   "agentName": "Ulysse1",
   "communicationRange": 3,
   "initialLocation": "free",
-  "backPackCapacityGold": -1,
-  "backPackCapacityDiamond":-1, 
+  "backPackCapacityGold": 10,
+  "backPackCapacityDiamond":10,
   "detectionRadius": 0,
   "strengthExpertise": 1,
   "lockPickingExpertise":1
   },
 { 
-  "agentType":"agentExplo",
+  "agentType":"agentCollect",
   "agentName": "Ulysse2",
   "communicationRange": 3,
   "initialLocation": "0_0",
-  "backPackCapacityGold": -1,
-  "backPackCapacityDiamond":-1, 
+  "backPackCapacityGold": 10,
+  "backPackCapacityDiamond":10,
   "detectionRadius": 0,
   "strengthExpertise": 1,
   "lockPickingExpertise":1

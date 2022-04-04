@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
 import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.behaviours.SimpleBehaviour;
+
+import static java.time.Instant.now;
 
 
 public class ExploCoopBehaviour extends SimpleBehaviour {
@@ -84,7 +87,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			if (!this.myMap.hasOpenNode()){
 				((BaseExplorerAgent)this.myAgent).endBehaviour(behaviourName);
 				System.out.println(this.myAgent.getLocalName()+" - Exploration successufully done, behaviour removed.");
-				((BaseExplorerAgent) this.myAgent).explorationDone();
+				((BaseExplorerAgent)this.myAgent).explorationDone();
 			}else{
 				//4) select next move.
 				//4.1 If there exist one open node directly reachable, go for it,
@@ -97,7 +100,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						}
 					}
 				}
-			if(((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(behaviourName) && nextNode != null) {
+			if(((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName) && nextNode != null) {
 				if(nextNode == ((BaseExplorerAgent) this.myAgent).getCurrentDest())
 					((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
 
@@ -105,13 +108,15 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 			}
 		}
+
 		for (Couple <Observation, Integer> o: lobs.get(0).getRight()){
 			switch (o.getLeft()){
-				case DIAMOND: case GOLD:
+				case DIAMOND:
+					((BaseExplorerAgent) this.myAgent).getMap().setContainsDiamond(true);
+					case GOLD:
 					// ADD THE TREASURE TO THE LIST
-					Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight());
+					Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight(),Instant.now().toEpochMilli());
 					((BaseExplorerAgent)myAgent).addTreasure(t);
-					((AbstractDedaleAgent)myAgent).pick();
 			}
 		}
 
@@ -122,7 +127,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 	@Override
 	public boolean done() {
-		return !((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(behaviourName);
+		return !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName);
 	}
 
 }

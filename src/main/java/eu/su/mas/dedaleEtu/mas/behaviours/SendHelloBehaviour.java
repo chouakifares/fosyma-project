@@ -24,29 +24,51 @@ public class SendHelloBehaviour extends SimpleBehaviour {
         ACLMessage msg=new ACLMessage(ACLMessage.INFORM);
         msg.setSender(this.myAgent.getAID());
         msg.setProtocol(protocol);
-        ((BaseExplorerAgent) this.myAgent).endBehaviour(ExploCoopBehaviour.behaviourName);
-        ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
-        for (String agentName: receivers){
-            msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
+        msg.setContent(Integer.toString(((BaseExplorerAgent)this.myAgent).getPhase()));
+        //during exploration
+        if(((BaseExplorerAgent)this.myAgent).getPhase()==0){
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(ExploCoopBehaviour.behaviourName);
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
+            for (String agentName: receivers){
+                msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
+            }
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    ReceiveHelloBehaviour.behaviourName,
+                    new ReceiveHelloBehaviour((AbstractDedaleAgent) this.myAgent)
+            );
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    RestoreExploBehaviour.behaviourName,
+                    new RestoreExploBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
+            );
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    RestoreSendHelloBehaviour.behaviourName,
+                    new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 3000)
+            );
+            System.out.println("SendHello:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
         }
-        ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
-                ReceiveHelloBehaviour.behaviourName,
-                new ReceiveHelloBehaviour((AbstractDedaleAgent) this.myAgent)
-        );
-        ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
-                RestoreMoveBehaviour.behaviourName,
-                new RestoreMoveBehaviour((AbstractDedaleAgent) this.myAgent, 2000)
-        );
-        ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
-                RestoreSendHelloBehaviour.behaviourName,
-                new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 3000)
-        );
-        System.out.println("SendHello:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+        else if(((BaseExplorerAgent)this.myAgent).getPhase()==1){
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(CollectTreasureBehavior.behaviourName);
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    ReceiveHelloBehaviour.behaviourName,
+                    new ReceiveHelloBehaviour((AbstractDedaleAgent) this.myAgent)
+            );
+            for (String agentName: receivers){
+                msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
+            }
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    RestoreCollectBehaviour.behaviourName,
+                    new RestoreCollectBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
+            );
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    RestoreSendHelloBehaviour.behaviourName,
+                    new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 3000)
+            );
+        }
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
-
     }
 
     public boolean done(){
-        return !((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(behaviourName);
+        return !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName);
     }
 }

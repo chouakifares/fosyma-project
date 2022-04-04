@@ -3,17 +3,19 @@ package eu.su.mas.dedaleEtu.mas.knowledge;
 import eu.su.mas.dedale.env.Observation;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
-public class Treasure implements Serializable {
+public class Treasure implements Serializable , Comparable{
 
     private final String position;
     private final Observation type;
     private Integer value;
-
-    public Treasure(String position, Observation type, Integer value){
+    private long obsTime = 0;
+    public Treasure(String position, Observation type, Integer value, long t){
         this.position = position;
         this.type = type;
         this.value = value;
+        this.obsTime = t;
     }
 
     public String getPosition() {
@@ -35,5 +37,10 @@ public class Treasure implements Serializable {
         Treasure other = (Treasure) obj;
         return ((Treasure) obj).getPosition().equals(this.position);
 
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return ((Treasure)o).getQuantity().compareTo(this.getQuantity());
     }
 }

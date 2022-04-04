@@ -1,25 +1,47 @@
 [
 { 
-  "agentType":"agentExplo",
+  "agentType":"agentCollect",
   "agentName": "1stAgent",
   "communicationRange": 3,
   "initialLocation": "free",
-  "backPackCapacityGold": -1,
-  "backPackCapacityDiamond":-1, 
+  "backPackCapacityGold": 1000,
+  "backPackCapacityDiamond":2000,
   "detectionRadius": 0,
   "strengthExpertise": 1,
   "lockPickingExpertise":1
   },
 { 
-  "agentType":"agentExplo",
+  "agentType":"agentCollect",
   "agentName": "2ndAgent",
   "communicationRange": 3,
   "initialLocation": "free",
-  "backPackCapacityGold": -1,
-  "backPackCapacityDiamond":-1, 
+  "backPackCapacityGold": 1000,
+  "backPackCapacityDiamond":2000,
   "detectionRadius": 0,
   "strengthExpertise": 1,
   "lockPickingExpertise":1
+  },
+  {
+    "agentType":"agentCollect",
+    "agentName": "3rdAgent",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 1000,
+    "backPackCapacityDiamond":2000,
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  {
+    "agentType":"agentCollect",
+    "agentName": "4thAgent",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 1000,
+    "backPackCapacityDiamond":2000,
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
   },
   { 
   "agentType":"HumanControlled",

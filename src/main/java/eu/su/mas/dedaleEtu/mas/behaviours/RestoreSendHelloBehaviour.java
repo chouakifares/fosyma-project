@@ -15,9 +15,9 @@ public class RestoreSendHelloBehaviour extends WakerBehaviour {
     }
 
     protected void onWake() {
-        if (!((BaseExplorerAgent) this.myAgent).isBusy() && ((BaseExplorerAgent) this.myAgent).getExploBehaviourStatus(behaviourName)){
+        if (((BaseExplorerAgent) this.myAgent).getBehaviourStatus(behaviourName)){
             SendHelloBehaviour b = new SendHelloBehaviour(this.myAgent, (ArrayList<String>) ((BaseExplorerAgent) this.myAgent).getList_agentNames());
-            ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(SendHelloBehaviour.behaviourName, b);
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(SendHelloBehaviour.behaviourName, b);
             ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
         }
     }

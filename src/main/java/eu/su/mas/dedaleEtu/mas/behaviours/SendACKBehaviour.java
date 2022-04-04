@@ -10,16 +10,21 @@ public class SendACKBehaviour extends OneShotBehaviour {
     private String receiver;
     public static String behaviourName = "sendACK" ;
     public static String protocol = "myACKToken";
-    public SendACKBehaviour(AbstractDedaleAgent a, String receiver){
+    private int samePhase = 0;
+    public SendACKBehaviour(AbstractDedaleAgent a, String receiver, boolean samePhase){
         super(a);
         this.receiver = receiver;
+        if(samePhase)
+            this.samePhase =2;
+        else
+            this.samePhase =-2;
     }
     @Override
     public void action() {
         ACLMessage msg=new ACLMessage(ACLMessage.CONFIRM);
         if(((BaseExplorerAgent)this.myAgent).getBehaviour(ReceiveACKBehaviour.behaviourName)== null ||
-                !((BaseExplorerAgent)this.myAgent).getExploBehaviourStatus(ReceiveACKBehaviour.behaviourName)) {
-            ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(ReceiveACKBehaviour.behaviourName)) {
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                     ReceiveACKBehaviour.behaviourName,
                     new ReceiveACKBehaviour((AbstractDedaleAgent) this.myAgent)
             );
@@ -27,6 +32,7 @@ public class SendACKBehaviour extends OneShotBehaviour {
         msg.setSender(this.myAgent.getAID());
         msg.setProtocol(protocol);
         msg.addReceiver(new AID(this.receiver,AID.ISLOCALNAME));
+        msg.setContent(Integer.toString(this.samePhase));
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
         System.out.println("SendACK:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
         ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);

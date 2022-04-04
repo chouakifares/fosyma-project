@@ -11,21 +11,22 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ReceiveTopoBehaviour extends SimpleBehaviour {
+public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
 
     private boolean finished;
-    public static String behaviourName = "receiveTopo";
+    public static String behaviourName = "receiveExploInfo";
 
-    public ReceiveTopoBehaviour(Agent myAgent){
+    public ReceiveExploInfoBehaviour(Agent myAgent){
         super(myAgent);
 
     }
     @Override
     public void action() {
         MessageTemplate msgTemplate=MessageTemplate.and(
-                MessageTemplate.MatchProtocol(ShareTopoBehaviour.protocol),
+                MessageTemplate.MatchProtocol(ShareExploInfoBehaviour.protocol),
                 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         ACLMessage msgReceived=this.myAgent.receive(msgTemplate);
         if (msgReceived!=null) {
@@ -36,12 +37,31 @@ public class ReceiveTopoBehaviour extends SimpleBehaviour {
             String senderPosition = null;
             SerializableSimpleGraph<String, MapRepresentation.MapAttribute> sgreceived=null;
             try {
-                sgreceived = (SerializableSimpleGraph<String, MapRepresentation.MapAttribute>)((HashMap)msgReceived.getContentObject()).get("map");
+                if(((HashMap)msgReceived.getContentObject()).containsKey("map")) {
+                    sgreceived = (SerializableSimpleGraph<String, MapRepresentation.MapAttribute>) ((HashMap) msgReceived.getContentObject()).get("map");
+                    //updata map
+                    currentMap.mergeMap(sgreceived);
+                }
+            } catch (UnreadableException e) {
+                e.printStackTrace();
+            }
+
+            //update backpack
+            try {
+                if(((HashMap)msgReceived.getContentObject()).containsKey("BackPack")){
+                    ((BaseExplorerAgent) this.myAgent).setAgentBelievedBackpack(msgReceived.getSender().getLocalName(),
+                            (int) ((Couple)((ArrayList)((HashMap)msgReceived.getContentObject()).get("BackPack")).get(0)).getRight());
+                }
+            }catch (UnreadableException e) {
+                e.printStackTrace();
+            }
+
+            try {
                 senderPosition = (String) ((HashMap)msgReceived.getContentObject()).get("position");
             } catch (UnreadableException e) {
                 e.printStackTrace();
             }
-            currentMap.mergeMap(sgreceived);
+            // coordinated exploration
             if(((BaseExplorerAgent) this.myAgent).getMap().hasOpenNode()){
                 Couple<String , Integer> myNewDest = ((BaseExplorerAgent) this.myAgent).getMap().getClosestOpenNode(((BaseExplorerAgent) this.myAgent).getCurrentPosition());
                 Couple<String , Integer>  senderNewDest = ((BaseExplorerAgent) this.myAgent).getMap().getClosestOpenNode(senderPosition);
@@ -70,24 +90,27 @@ public class ReceiveTopoBehaviour extends SimpleBehaviour {
                 }else{
                     ((BaseExplorerAgent) this.myAgent).setCurrentDest(myNewDest.getLeft());
                 }
-                ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                         ExploCoopBehaviour.behaviourName,
                         new ExploCoopBehaviour((AbstractDedaleAgent) this.myAgent, ((BaseExplorerAgent) this.myAgent).getMap())
                 );
                 ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
-                ((BaseExplorerAgent) this.myAgent).addBehaviourToExploBehaviourMap(
+                ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                         RestoreSendHelloBehaviour.behaviourName,
                         new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
                 );
-                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreMoveBehaviour.behaviourName);
+                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreExploBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).setBusy(false);
                 ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
-                System.out.println(this.myAgent.getLocalName() + ((BaseExplorerAgent) this.myAgent).ExploBehaviourmap);
-                System.out.println("ReceiveTOPO:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+                System.out.println(this.myAgent.getLocalName() + ((BaseExplorerAgent) this.myAgent).Behaviourmap);
+                System.out.println("ReceiveInfo:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+            }
+            else{
+                ((BaseExplorerAgent) this.myAgent).explorationDone();
             }
         }
     }
 
-    public boolean done(){return  !((BaseExplorerAgent) this.myAgent).getExploBehaviourStatus(behaviourName);}
+    public boolean done(){return  !((BaseExplorerAgent) this.myAgent).getBehaviourStatus(behaviourName);}
 
 }
