@@ -27,7 +27,7 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 	private static final long serialVersionUID = 9088209402507795289L;
 
 	public RandomWalkBehaviour (final AbstractDedaleAgent myagent) {
-		super(myagent, 500);
+		super(myagent, 1000);
 	}
 
 	@Override
@@ -39,7 +39,11 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
-			
+			try {
+				this.myAgent.doWait(3000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			//list of observations associated to the currentPosition
 			List<Couple<Observation,Integer>> lObservations= lobs.get(0).getRight();
 

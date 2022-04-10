@@ -48,9 +48,11 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
             }
             String senderPos = (String) sg.get("position");
             Observation senderType = (Observation) sg.get("type");
+            List<Treasure> Treasures = (List) sg.get("Treasures");
+            ((BaseExplorerAgent)this.myAgent).mergeTreasures(Treasures);
             if(senderType == Observation.ANY_TREASURE){
                 if(((BaseExplorerAgent)this.myAgent).getMyType() == Observation.ANY_TREASURE){
-                    // same type , with empty backpacks
+                    // No type , with empty backpacks
                 }else{
                     //the receiver has a type while the sender hasn't yet picked a type
                     // sender will choose its type by looking at the available ressource when taking out the amount of ressource the back pack of the receiver has

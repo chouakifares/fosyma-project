@@ -33,6 +33,7 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
         SerializableSimpleGraph<String, MapRepresentation.MapAttribute> sg=((BaseExplorerAgent)this.myAgent).getMap().getSerializableGraph();
         HashMap temp = new HashMap();
         temp.put("map", sg);
+        temp.put("treasure", ((BaseExplorerAgent) this.myAgent).getTreasures());
         temp.put("position", ((BaseExplorerAgent) this.myAgent).getCurrentPosition());
         if(((BaseExplorerAgent) this.myAgent).getAgentBelievedBackpack(receiver)==-1){
             temp.put("BackPack", ((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace());
@@ -50,6 +51,9 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
                     ReceiveExploInfoBehaviour.behaviourName,
                     new ReceiveExploInfoBehaviour(this.myAgent)
             );
+        }
+        else{
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CollectTreasureBehavior.behaviourName, new CollectTreasureBehavior(this.myAgent));
         }
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
     }

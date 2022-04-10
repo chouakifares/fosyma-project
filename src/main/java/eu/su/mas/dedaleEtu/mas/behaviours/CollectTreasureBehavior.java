@@ -9,6 +9,7 @@ import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 
 import java.sql.SQLOutput;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,14 +23,18 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
         super(myAgent);
     }
     public void action() {
+        //agent doesn't know where to go
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
             Couple<String , Integer> closestTreasure = findClosestPackableTreasure();
             if(closestTreasure!=null)
                 ((BaseExplorerAgent) this.myAgent).setCurrentDest(closestTreasure.getLeft());
         }
         String nextNode;
+        List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();
+        // agent wants to go somewhere
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()!=null) {
             List<String> next = ((BaseExplorerAgent)this.myAgent).getMap().getShortestPath(((BaseExplorerAgent) this.myAgent).getCurrentPosition(), ((BaseExplorerAgent) this.myAgent).getCurrentDest());
+            //agent hasn't yet reacehd his destination
             if(next.size() > 0) {
                 nextNode = ((BaseExplorerAgent) this.myAgent).getMap().getShortestPath(((BaseExplorerAgent) this.myAgent).getCurrentPosition(), ((BaseExplorerAgent) this.myAgent).getCurrentDest()).get(0);//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
                 String currentPos = ((BaseExplorerAgent) this.myAgent).getCurrentPosition();
@@ -42,28 +47,48 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     ((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
                 }
             }
+            //agnet reached his destination
             else{
-                List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();
+                // checking
                 Observation treasureType = null;
-                if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE) {
-                    for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
-                        switch (o.getLeft()) {
-                            case DIAMOND:
-                                treasureType = Observation.DIAMOND;
+                for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
+                    switch (o.getLeft()) {
+                        case DIAMOND:
+                            treasureType = Observation.DIAMOND;
+                            if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
-                                break;
-                            case GOLD:
-                                treasureType = Observation.GOLD;
+                            break;
+                        case GOLD:
+                            treasureType = Observation.GOLD;
+                            if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
-                                break;
-                        }
+                            break;
                     }
                 }
-                if(treasureType!= null && ((BaseExplorerAgent)this.myAgent).getMyType() == treasureType)
+
+                if(treasureType!= null && ((BaseExplorerAgent)this.myAgent).getMyType() == treasureType) {
                     ((BaseExplorerAgent) this.myAgent).pick();
-                ((BaseExplorerAgent) this.myAgent).deleteTreasure(((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+
+                }
                 ((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
             }
+            //update the agent's perceptions
+            lobs = ((AbstractDedaleAgent) this.myAgent).observe();
+            //update the agent's treasure list
+            if(lobs.get(0).getRight().size()!=0)
+                ((BaseExplorerAgent) this.myAgent).updateTreasure(
+                        ((BaseExplorerAgent) this.myAgent).getCurrentPosition(),
+                        (Observation) ((Couple) lobs.get(0).getRight().get(0)).getLeft(),
+                        (Integer) ((Couple) lobs.get(0).getRight().get(0)).getRight(),
+                        Instant.now().toEpochMilli()
+                );
+            else
+                ((BaseExplorerAgent) this.myAgent).updateTreasure(
+                        ((BaseExplorerAgent) this.myAgent).getCurrentPosition(),
+                        null,
+                        0,
+                        Instant.now().toEpochMilli()
+                );
         }
         // agent can't pick up anymore treasures
         else{
@@ -73,6 +98,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
             ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap("randomWalk", new RandomWalkBehaviour((AbstractDedaleAgent) this.myAgent));
         }
     }
+
 
     private Couple<String, Integer> findClosestPackableTreasure(){
         Observation myType= ((BaseExplorerAgent)this.myAgent).getMyType();

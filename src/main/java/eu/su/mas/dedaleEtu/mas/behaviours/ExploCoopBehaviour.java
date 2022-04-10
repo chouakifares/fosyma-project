@@ -100,25 +100,25 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						}
 					}
 				}
-			if(((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName) && nextNode != null) {
-				if(nextNode == ((BaseExplorerAgent) this.myAgent).getCurrentDest())
-					((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
+				if(((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName) && nextNode != null) {
+					if(nextNode == ((BaseExplorerAgent) this.myAgent).getCurrentDest())
+						((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
 
-				((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
+					((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
 
+				}
 			}
-		}
 
-		for (Couple <Observation, Integer> o: lobs.get(0).getRight()){
-			switch (o.getLeft()){
-				case DIAMOND:
-					((BaseExplorerAgent) this.myAgent).getMap().setContainsDiamond(true);
-					case GOLD:
-					// ADD THE TREASURE TO THE LIST
-					Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight(),Instant.now().toEpochMilli());
-					((BaseExplorerAgent)myAgent).addTreasure(t);
+			for (Couple <Observation, Integer> o: lobs.get(0).getRight()){
+				switch (o.getLeft()){
+					case DIAMOND:
+						((BaseExplorerAgent) this.myAgent).getMap().setContainsDiamond(true);
+						case GOLD:
+						// ADD THE TREASURE TO THE LIST
+						Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight(),Instant.now().toEpochMilli());
+						((BaseExplorerAgent)myAgent).addTreasure(t);
+				}
 			}
-		}
 
 
 

@@ -70,13 +70,36 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     public List<Treasure> getTreasures() {
         return treasures;
     }
-    public void deleteTreasure(String Pos){
-        for(int i=0 ; i<this.treasures.size(); i++)
-            if(this.treasures.get(i).getPosition()==Pos){
+    public void updateTreasure(String Pos, Observation obs,int quantity, long t){
+        for(int i=0 ; i<this.treasures.size(); i++) {
+            if (this.treasures.get(i).getPosition() == Pos) {
                 this.treasures.remove(i);
             }
+        }
+        this.treasures.add(new Treasure(Pos, obs, quantity, t));
     }
 
+    //Merges a list a of treasure that agent A receives from agent B
+    public void mergeTreasures(List<Treasure> t) {
+        for (int j = 0; j < t.size(); j++) {
+            boolean in = false;
+            Treasure tr = t.get(j);
+            for (int i = 0; i < this.treasures.size(); i++) {
+                in = true;
+                if(this.treasures.get(i).getPosition() == t.get(j).getPosition()) {
+                    //update the trasure if the
+                    if (this.treasures.get(i).getObsTime() < t.get(j).getObsTime())
+                        this.updateTreasure(tr.getPosition(), tr.getType(), tr.getQuantity(), tr.getObsTime());
+
+                }
+            }
+            // the agent hasn't find this treasure yet
+            if(!in){
+                //add the treasure to the agent's treasure list
+                this.treasures.add(new Treasure(tr.getPosition(), tr.getType(), tr.getQuantity(), tr.getObsTime()));
+            }
+        }
+    }
     // list of the agent's beliefs about other agents
     private HashMap<String, HashMap> agentBeliefs = new HashMap<String, HashMap>();
 
