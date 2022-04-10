@@ -87,6 +87,7 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                 }
             }
             System.out.println( this.myAgent.getLocalName() + "done");
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
             ((BaseExplorerAgent) this.myAgent).setBusy(false);
         }
 

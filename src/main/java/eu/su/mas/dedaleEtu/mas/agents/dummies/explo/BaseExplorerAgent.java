@@ -100,6 +100,8 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
             }
         }
     }
+
+
     // list of the agent's beliefs about other agents
     private HashMap<String, HashMap> agentBeliefs = new HashMap<String, HashMap>();
 

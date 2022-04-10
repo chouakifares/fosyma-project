@@ -47,7 +47,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     ((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
                 }
             }
-            //agnet reached his destination
+            //agent reached his destination
             else{
                 // checking
                 Observation treasureType = null;
@@ -102,26 +102,70 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
 
     private Couple<String, Integer> findClosestPackableTreasure(){
         Observation myType= ((BaseExplorerAgent)this.myAgent).getMyType();
-        int mySpace = (int) ((Couple)((ArrayList)((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()).get(0)).getRight();
+        int mySpace =0;
+        if(myType == Observation.ANY_TREASURE){
+            mySpace = ((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace().stream().min(Comparator.comparing(Couple::getRight)).get().getRight();
+        }else{
+            if(myType == Observation.GOLD)
+                mySpace = (int) ((Couple)((ArrayList)((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()).get(0)).getRight();
+            else
+                mySpace = (int) ((Couple)((ArrayList)((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace()).get(1)).getRight();
+        }
         List <String> packableTreasures = new ArrayList<String>();
+        List <String> smallestNonPackableTreasures = new ArrayList<String>();
+        int  max = 0;
+        Double min = Double.POSITIVE_INFINITY;
         for(Treasure i : ((BaseExplorerAgent) this.myAgent).getTreasures()){
-            if(myType == Observation.ANY_TREASURE){
-                if(((BaseExplorerAgent) this.myAgent).getMap().isContainsDiamond()){
-                    if(i.getType() == Observation.DIAMOND)
+            //TO REFACTOR
+            if(myType == Observation.ANY_TREASURE ) {
+                if(i.getQuantity() < mySpace) {
+                    if (i.getQuantity() == max)
                         packableTreasures.add(i.getPosition());
+                    else if (i.getQuantity() > max) {
+                        packableTreasures.clear();
+                        packableTreasures.add(i.getPosition());
+                        max = i.getQuantity();
+                    }
                 }else{
-                    packableTreasures.add(i.getPosition());
+                    if (min == Double.valueOf(i.getQuantity()))
+                        smallestNonPackableTreasures.add(i.getPosition());
+                    else if (i.getQuantity() < min && i.getQuantity()>0) {
+                        smallestNonPackableTreasures.clear();
+                        smallestNonPackableTreasures.add(i.getPosition());
+                        min = Double.valueOf(i.getQuantity());
+                    }
                 }
-
             }else{
-                if(i.getType()==myType){
-                    packableTreasures.add(i.getPosition());
+                if(i.getType()==myType && i.getQuantity()< mySpace){
+                    if (i.getQuantity() == max)
+                        packableTreasures.add(i.getPosition());
+                    else if (i.getQuantity() > max) {
+                        packableTreasures.clear();
+                        packableTreasures.add(i.getPosition());
+                        max = i.getQuantity();
+                    }
+                }else{
+                    if (Double.valueOf(i.getQuantity()) == min)
+                        smallestNonPackableTreasures.add(i.getPosition());
+                    else if (i.getQuantity() < min && i.getQuantity()>0) {
+                        smallestNonPackableTreasures.clear();
+                        smallestNonPackableTreasures.add(i.getPosition());
+                        min = Double.valueOf(i.getQuantity());
+                    }
                 }
             }
         }
-        if(!packableTreasures.isEmpty() && mySpace!=0){
+        if(mySpace!=0){
+            List<String> temp = null;
+            if(!packableTreasures.isEmpty()){
+                temp = packableTreasures;
+            }
+            // we look for the smallest treasure that the agent is able to carry
+            else{
+                temp = smallestNonPackableTreasures;
+            }
             List<Couple<String,Integer>> lc=
-                    packableTreasures.stream()
+                    temp.stream()
                             .map(on -> (((BaseExplorerAgent) this.myAgent).getMap().
                                     getShortestPath(((BaseExplorerAgent) this.myAgent).getCurrentPosition(),on)!=null)?
                                     new Couple<String, Integer>(on,((BaseExplorerAgent) this.myAgent).getMap().getShortestPath(((BaseExplorerAgent) this.myAgent)
@@ -131,6 +175,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
             return closest.get();
         }
         return null;
+
     }
 
     @Override

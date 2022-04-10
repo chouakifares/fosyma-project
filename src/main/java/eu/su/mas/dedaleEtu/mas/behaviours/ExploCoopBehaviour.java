@@ -112,7 +112,6 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			for (Couple <Observation, Integer> o: lobs.get(0).getRight()){
 				switch (o.getLeft()){
 					case DIAMOND:
-						((BaseExplorerAgent) this.myAgent).getMap().setContainsDiamond(true);
 						case GOLD:
 						// ADD THE TREASURE TO THE LIST
 						Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight(),Instant.now().toEpochMilli());
