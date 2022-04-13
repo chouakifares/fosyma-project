@@ -16,14 +16,32 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CollectTreasureBehavior extends SimpleBehaviour {
+
     public static String behaviourName="CollectTreasureBehavior";
     private boolean finished = false;
+    private String lastPosition = null;
+    private int nbBlocked = 0;
+    private int blockedLimit = 3;
+
+
     public CollectTreasureBehavior(Agent myAgent){
         super(myAgent);
     }
+
+
     public void action() {
+        // Test si l'agent est potentiellement bloqué
+//        if (lastPosition == ((AbstractDedaleAgent)this.myAgent).getCurrentPosition())
+//            nbBlocked++;
+//        else {
+//            lastPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
+//            nbBlocked = 0;
+//        }
+//        if (nbBlocked == blockedLimit){
+//            SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent,  );
+//        }
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
-            Couple<String , Integer> closestTreasure = findClosestPackableTreasure();
+            Couple<String, Integer> closestTreasure = findClosestPackableTreasure();
             if(closestTreasure!=null)
                 ((BaseExplorerAgent) this.myAgent).setCurrentDest(closestTreasure.getLeft());
         }
@@ -45,7 +63,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
             else{
                 List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();
                 Observation treasureType = null;
-                if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE) {
+                if(((BaseExplorerAgent)this.myAgent).getMyType() == Observation.ANY_TREASURE) {
                     for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
                         switch (o.getLeft()) {
                             case DIAMOND:

@@ -21,6 +21,7 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     private static final long serialVersionUID = -7969469610241668140L;
     private MapRepresentation myMap;
     private boolean busy = false;
+    private int old_phase = 0;
 
     public boolean isFull() {
         return full;
@@ -36,7 +37,31 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     }
 
     public void setPhase(int phase) {
+        old_phase = this.phase;
         this.phase = phase;
+    }
+
+    public int getCapacity(){
+        BaseExplorerAgent myAgent = this;
+        int myCapacity = 0;
+        Observation myAgentType = ((BaseExplorerAgent) myAgent).getMyTreasureType();
+        switch (myAgentType){
+            case ANY_TREASURE: ;
+                if (((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight() < ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight()){
+                    myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight();
+                } else {
+                    myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
+                }
+            case DIAMOND:
+                myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight();
+            case GOLD:
+                myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
+        }
+        return myCapacity;
+    }
+
+    public int getOldPhase(){
+        return old_phase;
     }
 
     private int phase = 0;
@@ -124,12 +149,11 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         lb.add(move);
         addBehaviour(new startMyBehaviours(this,lb));
         System.out.println("the  agent "+this.getLocalName()+ " is started");
+
     }
     // sets a bahvior states to  false in order to use it in the done methode of that behaviour
     public void endBehaviour(String toDelete) {
             this.Behaviourmap.get(toDelete).put("active", false);
-
-
     }
     // add behaviour to the map of behaviours used in exploration , if the behaviour already exists it sets it to active again
     public void addBehaviourToBehaviourMap(String toAdd, Behaviour bToAdd){

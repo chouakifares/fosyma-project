@@ -52,6 +52,16 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 			Random r= new Random();
 			int moveId=1+r.nextInt(lobs.size()-1);//removing the current position from the list of target, not necessary as to stay is an action but allow quicker random move
 
+
+			/**
+			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
+			 */
+			try {
+				this.myAgent.doWait(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			//The move action (if any) should be the last action of your behaviour
 			((AbstractDedaleAgent)this.myAgent).moveTo(lobs.get(moveId).getLeft());
 		}

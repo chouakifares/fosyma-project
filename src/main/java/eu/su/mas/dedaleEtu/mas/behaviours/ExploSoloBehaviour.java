@@ -57,6 +57,7 @@ public class ExploSoloBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 
+
 		if(this.myMap==null)
 			this.myMap= new MapRepresentation();
 		

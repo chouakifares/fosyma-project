@@ -296,6 +296,10 @@ public class MapRepresentation implements Serializable {
 		g.display();
 	}
 
+	public Graph getGraph(){
+		return g;
+	}
+
 	public void mergeMap(SerializableSimpleGraph<String, MapAttribute> sgreceived) {
 		//System.out.println("You should decide what you want to save and how");
 		//System.out.println("We currently blindy add the topology");
