@@ -39,6 +39,7 @@ public class UnblockBehaviour extends SimpleBehaviour
 
     @Override
     public void action() {
+
         if (((BaseExplorerAgent)myAgent).getPhase()==2){
             myMap = ((BaseExplorerAgent) myAgent).getMap();
             String nextNode = null;
@@ -57,11 +58,10 @@ public class UnblockBehaviour extends SimpleBehaviour
             else if (compatibleNodesToTry == null){
                 System.out.println("i am blocked at "+myPosition);
                 return;
-            } else if (compatibleNodesToTry.isEmpty()){
-                System.out.println(" i am blocked at "+myPosition);
+            } else if (compatibleNodesToTry.isEmpty()) {
+                System.out.println(" i am blocked at " + myPosition);
                 return;
             }
-            System.out.println("Je suis "+myAgent.getLocalName()+" J'exécute UNBLOCK");
             //Compute the path to the leader's current destination
             List<String> next = this.myMap.getShortestPath(myPosition, finalDestination);
             List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent).observe();
@@ -105,6 +105,10 @@ public class UnblockBehaviour extends SimpleBehaviour
                 }
             } else if (nextNode != null) {
                 nextTry = nextNode;
+            } else
+            {
+                System.out.println("Je sais pas quoi faire");
+                return;
             }
             lastPosition = myPosition;
             lastTry = nextTry;
