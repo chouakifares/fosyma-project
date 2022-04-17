@@ -78,10 +78,12 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
                 if (isLeader == 1) { // if the sender has the priority (cul de sac OR is under a leader)
                     ((BaseExplorerAgent)myAgent).endBehaviour(behaviourName);
                     // Interrumpt agent movement
-                    ((BaseExplorerAgent) myAgent).setPhase(2);
-                    // Launch a behaviour that will make my agent move to another available position
-                    UnblockBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
-                    ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);}
+                    if ((((BaseExplorerAgent) myAgent).getPhase() != 2)){
+                        ((BaseExplorerAgent) myAgent).setPhase(2);
+                        // Launch a behaviour that will make my agent move to another available position
+                        UnblockBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
+                        ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);}
+                    }
                 }
                 else { // he's not in a cul de sac
                 int myCapacity = 0;
