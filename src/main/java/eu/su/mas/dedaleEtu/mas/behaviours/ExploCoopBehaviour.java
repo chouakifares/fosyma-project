@@ -58,7 +58,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			if (myPosition != null) {
 
 				// Test si l'agent est potentiellement bloqué
-				if (lastPosition == myPosition)
+				if (lastPosition != null && lastPosition.equals(myPosition))
 					nbBlocked++;
 				else {
 					lastPosition = myPosition;
@@ -77,7 +77,6 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 					}
 				}
-
 
 				//List of observable from the agent's current position
 				List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent).observe();//myPosition
