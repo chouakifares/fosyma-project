@@ -40,12 +40,19 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
         ACLMessage msg=new ACLMessage(ACLMessage.INFORM);
         msg.setSender(this.myAgent.getAID());
         msg.setProtocol(protocol);
-        HashMap<String, String> tmp = new HashMap<String,String>();
+        HashMap tmp = new HashMap();
         tmp.put("nextPosition", nextPosition);
         tmp.put("isLeader", Integer.toString(isLeader));
         tmp.put("senderPosition",((BaseExplorerAgent)myAgent).getCurrentPosition());
-        tmp.put("finalDestination", ((BaseExplorerAgent)myAgent).getCurrentDest());
+        if (((BaseExplorerAgent)myAgent).getCurrentDest() == null) {
+            tmp.put("finalDestination", nextPosition);
+        } else {
+            tmp.put("finalDestination", ((BaseExplorerAgent) myAgent).getCurrentDest());
+        }
         tmp.put("capacity", Integer.toString(capacity));
+        tmp.put("map", ((BaseExplorerAgent)myAgent).getMap().getSerializableGraph());
+
+
 
         try {
             msg.setContentObject(tmp);
@@ -57,7 +64,7 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
             msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
         }
 
-        System.out.println("Send Blocked: "+this.myAgent.getLocalName()+" : "+((BaseExplorerAgent) this.myAgent).getCurrentPosition()+" ----> "+ nextPosition);
+        System.out.println("Send Blocked: "+this.myAgent.getLocalName()+" : "+((BaseExplorerAgent) this.myAgent).getCurrentPosition()+" -> "+ nextPosition + " ---> "+((BaseExplorerAgent)myAgent).getCurrentDest());
         ((BaseExplorerAgent)myAgent).addBehaviourToBehaviourMap(ReceiveBlockedBehaviour.behaviourName, new ReceiveBlockedBehaviour((AbstractDedaleAgent) this.myAgent));
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
     }

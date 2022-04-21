@@ -36,7 +36,7 @@
     "agentType":"agentCollect",
     "agentName": "4thAgent",
     "communicationRange": 3,
-    "initialLocation": "free",
+    "initialLocation": "42",
     "backPackCapacityGold": 1000,
     "backPackCapacityDiamond":2000,
     "detectionRadius": 0,

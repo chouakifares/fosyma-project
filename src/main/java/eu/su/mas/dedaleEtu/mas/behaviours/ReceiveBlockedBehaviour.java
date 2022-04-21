@@ -13,6 +13,7 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ReceiveBlockedBehaviour extends SimpleBehaviour {
 
@@ -33,6 +34,19 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
             String senderPosition = "";
             String finalDestination = "";
             int capacity = 0;
+            SerializableSimpleGraph<String, MapRepresentation.MapAttribute> map = null;
+
+            try {
+                if (((HashMap) msgReceived.getContentObject()).containsKey("map")) {
+                    map =  (SerializableSimpleGraph<String, MapRepresentation.MapAttribute>) ((HashMap) msgReceived.getContentObject()).get("map");
+                }
+            } catch (UnreadableException e) {
+                e.printStackTrace();
+            }
+            if (map != null) {
+                ((BaseExplorerAgent) myAgent).getMap().mergeMap(map);
+            }
+
             try {
                 if (((HashMap) msgReceived.getContentObject()).containsKey("nextPosition")) {
                     nextPosition = (String) ((HashMap) msgReceived.getContentObject()).get("nextPosition");
@@ -104,12 +118,15 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
                     if (myCapacity < capacity){
                         SimpleBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
                         ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);
+                        ((BaseExplorerAgent) myAgent).setPhase(2);
                     } else
                         if (myCapacity == capacity){
-                            if (myAgent.getLocalName().compareTo(msgReceived.getSender().getLocalName()) == 1){
+                            if (myAgent.getLocalName().compareTo(msgReceived.getSender().getLocalName()) > 0){
                                 SimpleBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
                                 ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);
-                        }
+                                ((BaseExplorerAgent) myAgent).setPhase(2);
+
+                            }
                     }
 
             }

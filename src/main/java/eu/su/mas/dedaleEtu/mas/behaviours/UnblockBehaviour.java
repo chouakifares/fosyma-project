@@ -6,8 +6,10 @@ import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.explo.BaseExplorerAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import jade.core.behaviours.SimpleBehaviour;
+import org.glassfish.pfl.basic.fsm.Guard;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class UnblockBehaviour extends SimpleBehaviour
@@ -18,17 +20,17 @@ public class UnblockBehaviour extends SimpleBehaviour
     private String leaderName;
     private String senderPosition;
     public static String behaviourName = "unblock";
-    private MapRepresentation myMap = null;
     private String finalDestination;
     private String lastPosition;
     private boolean goalReached = false;
-    private List<String> compatibleNodesToTry  = null;
+    private List<String> compatibleNodesToTry  = new ArrayList<>();
     private List<String> avoidablePositions = new ArrayList<String>();
     boolean finished = false;
     private boolean isBlocked = false;
-    private String lastTry = "";
+    private String lastTry = null;
 
     public UnblockBehaviour(AbstractDedaleAgent myAgent, int isLeader, String senderPosition, String nextPosition, String finalDestination, String leaderName) {
+        System.out.println(myAgent.getLocalName() + " receveived blocked from "+leaderName+ " finalDestination is "+finalDestination );
         this.myAgent = myAgent;
         this.isLeader = isLeader;
         this.nextPos = nextPosition;
@@ -36,6 +38,7 @@ public class UnblockBehaviour extends SimpleBehaviour
         this.leaderName = leaderName;
         this.senderPosition = senderPosition;
         lastPosition = senderPosition;
+
     }
 
     @Override
@@ -47,14 +50,13 @@ public class UnblockBehaviour extends SimpleBehaviour
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    myMap = ((BaseExplorerAgent) myAgent).getMap();
                     String nextNode = null;
                     String myPosition = myAgent.getCurrentPosition();
                     if (myPosition.equals(lastPosition)){
                         isBlocked = true;
-                        if ((compatibleNodesToTry == null) || compatibleNodesToTry.isEmpty()){
-                            System.out.println("i am blocked at "+myPosition);
-                            System.out.println("I send block to "+lastTry);
+                        if (compatibleNodesToTry.isEmpty()){
+                            System.out.println(myAgent.getLocalName() + " blocked at " + myPosition + " I send block to "+lastTry);
+                            ((BaseExplorerAgent)myAgent).setCurrentDest(lastTry);
                             SendBlockedBehaviour sb = new SendBlockedBehaviour(myAgent, isLeader, lastTry, ((((BaseExplorerAgent) myAgent).getCapacity())));
                             ReceiveBlockedBehaviour rb = new ReceiveBlockedBehaviour(myAgent);
                             ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, sb);
@@ -72,11 +74,35 @@ public class UnblockBehaviour extends SimpleBehaviour
                             return;
                         }
                     }
-
-
-                    //Compute the path to the leader's current destination
-                    List<String> next = this.myMap.getShortestPath(myPosition, finalDestination);
                     List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent).observe();
+
+                    ///////// MAJ de la map///////////////////////////////
+                    //1) remove the current node from openlist and add it to closedNodes.
+                        ((BaseExplorerAgent)(this.myAgent)).getMap().addNode(myPosition, MapRepresentation.MapAttribute.closed);
+
+                    //2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
+                    String nex = null;
+                    Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter = lobs.iterator();
+                    while (iter.hasNext()) {
+                        String nodeId = iter.next().getLeft();
+                        boolean isNewNode = ((BaseExplorerAgent)(this.myAgent)).getMap().addNewNode(nodeId);
+                        //the node may exist, but not necessarily the edge
+                        if (myPosition != nodeId) {
+                            ((BaseExplorerAgent)(this.myAgent)).getMap().addEdge(myPosition, nodeId);
+                            if (nex == null && isNewNode) nex = nodeId;
+                        }
+                    }
+                    //////////////////////////////////////////////
+                    if (!((BaseExplorerAgent) this.myAgent).getMap().hasOpenNode()) {
+                        ((BaseExplorerAgent) this.myAgent).endBehaviour(ExploCoopBehaviour.behaviourName);
+                        ((BaseExplorerAgent)myAgent).setExplorationDone(true);
+                    }
+
+
+
+            //Compute the path to the leader's current destination
+                    System.out.println(myAgent.getLocalName() + " at "+ myPosition +" final dest : "+ finalDestination);
+                    List<String> next = ((BaseExplorerAgent)myAgent).getMap().getShortestPath(myPosition, finalDestination);
                     if (next.size() > 0) {
                         nextNode = next.get(0);
                     }
@@ -93,7 +119,6 @@ public class UnblockBehaviour extends SimpleBehaviour
                                     !c.getLeft().equals((senderPosition)) &&
                                     !c.getLeft().equals(nextNode)) {
                                 compatibleNodesToTry.add(c.getLeft());
-                                System.out.println(c.getLeft() + ": is an interesting node");
                             }
                         }
                         if (nextNode != null) {
@@ -109,10 +134,12 @@ public class UnblockBehaviour extends SimpleBehaviour
                         for (Couple<String, List<Couple<Observation, Integer>>> c : lobs) {
                             if (!c.getLeft().equals(myPosition) &&
                                     !c.getLeft().equals(lastPosition) &&
-                                    !c.getLeft().equals((senderPosition))
-                                    && !c.getLeft().equals(finalDestination)) {
-                                System.out.println(c.getLeft() + ": is a final unblocking move");
+                                    !c.getLeft().equals((senderPosition)) &&
+                                  !compatibleNodesToTry.contains(c.getLeft())&&
+                                    !c.getLeft().equals(finalDestination)) {
+//                                System.out.println(c.getLeft() + ": is a final unblocking move");
                                 compatibleNodesToTry.add(c.getLeft());
+                                ((BaseExplorerAgent)this.myAgent).setCurrentDest(c.getLeft());
 
                             }
                         }
@@ -125,8 +152,10 @@ public class UnblockBehaviour extends SimpleBehaviour
                         nextTry = lastTry;
                     } else {
                         lastTry = nextTry;
-
                     }
+
+
+
                     System.out.println("I'll try to move to "+ nextTry);
                     myAgent.moveTo(nextTry);
         }

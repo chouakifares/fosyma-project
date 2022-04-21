@@ -56,6 +56,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			String myPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
 
 			if (myPosition != null) {
+
 				// Test si l'agent est potentiellement bloqué
 				if (lastPosition == myPosition)
 					nbBlocked++;
@@ -71,7 +72,6 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						} else if (this.myMap.getGraph().getNode(myPosition).getDegree() == 2) {
 
 						}
-						System.out.println(myAgent.getLocalName() + " at " + myPosition + " trying to go to " + nextPosition + "my final destination is " + ((BaseExplorerAgent) this.myAgent).getCurrentDest());
 						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, nextPosition, ((BaseExplorerAgent)myAgent).getCapacity());
 						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
 

@@ -198,6 +198,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         this.currentDest = currentDest;
     }
 
+    public boolean getExplorationStatus(){
+        return explorationDone;
+    }
+
 
     public void explorationDone() {
         this.explorationDone = true;
@@ -304,5 +308,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setAgentBelievedBackpack(String agentName, int backPack){
         this.agentBeliefs.get(agentName).put("BackPack", backPack);
+    }
+
+    public void setExplorationDone(boolean b){
+        explorationDone = b;
+
     }
 }
