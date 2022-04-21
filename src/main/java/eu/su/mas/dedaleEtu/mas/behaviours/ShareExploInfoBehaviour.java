@@ -53,6 +53,8 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
             );
         }
         else{
+
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(ReceiveExploInfoBehaviour.behaviourName);
             ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CollectTreasureBehavior.behaviourName, new CollectTreasureBehavior(this.myAgent));
         }
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);

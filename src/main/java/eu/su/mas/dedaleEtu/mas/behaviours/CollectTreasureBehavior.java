@@ -57,12 +57,12 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                             treasureType = Observation.DIAMOND;
                             if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
-                            break;
+                                break;
                         case GOLD:
                             treasureType = Observation.GOLD;
                             if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
-                            break;
+                                break;
                     }
                 }
 
@@ -136,21 +136,23 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     }
                 }
             }else{
-                if(i.getType()==myType && i.getQuantity()< mySpace){
-                    if (i.getQuantity() == max)
-                        packableTreasures.add(i.getPosition());
-                    else if (i.getQuantity() > max) {
-                        packableTreasures.clear();
-                        packableTreasures.add(i.getPosition());
-                        max = i.getQuantity();
-                    }
-                }else{
-                    if (Double.valueOf(i.getQuantity()) == min)
-                        smallestNonPackableTreasures.add(i.getPosition());
-                    else if (i.getQuantity() < min && i.getQuantity()>0) {
-                        smallestNonPackableTreasures.clear();
-                        smallestNonPackableTreasures.add(i.getPosition());
-                        min = Double.valueOf(i.getQuantity());
+                if(i.getType()==myType){
+                    if(i.getQuantity()< mySpace){
+                        if (i.getQuantity() == max)
+                            packableTreasures.add(i.getPosition());
+                        else if (i.getQuantity() > max) {
+                            packableTreasures.clear();
+                            packableTreasures.add(i.getPosition());
+                            max = i.getQuantity();
+                        }
+                    }else {
+                        if (Double.valueOf(i.getQuantity()) == min)
+                            smallestNonPackableTreasures.add(i.getPosition());
+                        else if (i.getQuantity() < min && i.getQuantity() > 0) {
+                            smallestNonPackableTreasures.clear();
+                            smallestNonPackableTreasures.add(i.getPosition());
+                            min = Double.valueOf(i.getQuantity());
+                        }
                     }
                 }
             }
@@ -171,6 +173,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                                     new Couple<String, Integer>(on,((BaseExplorerAgent) this.myAgent).getMap().getShortestPath(((BaseExplorerAgent) this.myAgent)
                                             .getCurrentPosition(),on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
                             .collect(Collectors.toList());
+
             Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
             return closest.get();
         }

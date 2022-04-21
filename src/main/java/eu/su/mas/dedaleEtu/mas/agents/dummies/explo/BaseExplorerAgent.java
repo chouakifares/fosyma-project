@@ -1,8 +1,10 @@
 package eu.su.mas.dedaleEtu.mas.agents.dummies.explo;
 
 
+import java.time.Instant;
 import java.util.*;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
@@ -16,12 +18,31 @@ import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.behaviours.Behaviour;
 
 import static eu.su.mas.dedale.env.Observation.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class BaseExplorerAgent extends AbstractDedaleAgent {
     private static final long serialVersionUID = -7969469610241668140L;
     private MapRepresentation myMap;
     private boolean busy = false;
+    private float prop = 0;
 
+    public float getProp(){
+        int available;
+        if(this.myType == GOLD)
+            available  = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(0)).getRight();
+        else
+            available  = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(1)).getRight();
+        if(totalSpace!=0)
+            return (this.totalSpace - available)/this.totalSpace;
+        return 0;
+    }
+
+    public int getTotalSpace() {
+        return totalSpace;
+    }
+
+    private int totalSpace = 0;
     public boolean isFull() {
         return full;
     }
@@ -47,6 +68,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setMyType(Observation myType) {
         this.myType = myType;
+        if(myType == GOLD)
+            this.totalSpace = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(0)).getRight();
+        else
+            this.totalSpace = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(1)).getRight();
     }
 
     private Observation myType = ANY_TREASURE;
@@ -77,6 +102,20 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
             }
         }
         this.treasures.add(new Treasure(Pos, obs, quantity, t));
+    }
+
+
+    public void updateTreasureQuantity(String Pos, int collectedQuantity){
+        Observation obs = null;
+        int initialQuantity = 0;
+        for(int i=0 ; i<this.treasures.size(); i++) {
+            if (this.treasures.get(i).getPosition() == Pos) {
+                obs = this.treasures.get(i).getType();
+                initialQuantity = this.treasures.get(i).getQuantity();
+                this.treasures.remove(i);
+            }
+        }
+        this.treasures.add(new Treasure(Pos, obs, max(initialQuantity - collectedQuantity,0), Instant.now().toEpochMilli()));
     }
 
     //Merges a list a of treasure that agent A receives from agent B

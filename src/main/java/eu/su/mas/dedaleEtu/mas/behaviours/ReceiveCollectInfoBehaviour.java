@@ -47,32 +47,11 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                 e.printStackTrace();
             }
             String senderPos = (String) sg.get("position");
+            String senderDest = (String) sg.get("dest");
+            float senderProp = (float)sg.get("prop");
             Observation senderType = (Observation) sg.get("type");
             List<Treasure> Treasures = (List) sg.get("Treasures");
             ((BaseExplorerAgent)this.myAgent).mergeTreasures(Treasures);
-            if(senderType == Observation.ANY_TREASURE){
-                if(((BaseExplorerAgent)this.myAgent).getMyType() == Observation.ANY_TREASURE){
-                    // No type , with empty backpacks
-                }else{
-                    //the receiver has a type while the sender hasn't yet picked a type
-                    // sender will choose its type by looking at the available ressource when taking out the amount of ressource the back pack of the receiver has
-                }
-            }else {
-                //sender already chose a type
-                if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE) {
-                    //current agent hasn't chose a type yet , it will choose a type by taking the in consideration the the backpack of the agent it's communicating with
-                    // the backpacks of the agents it saw during the exploration phase
-                }else{
-                    // both agents have already chosen a type
-                    // update the knowldge of each agent about the other (backpack wise)
-                    if(senderType == ((BaseExplorerAgent) this.myAgent).getMyType()){
-                        //if they're both headed for the same destination then
-                        //compare the back pack capacity of the of them and the one with the smallest percentage of used backpack goes to pick that treasure
-                        // the other recalculates its plan
-                    }
-                }
-            }
-
             int totalGold = 0;
             int totalDiamond = 0;
             int totalBackPacks = 0;
@@ -86,8 +65,74 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                     totalGold+= t.getQuantity();
                 }
             }
-            System.out.println( this.myAgent.getLocalName() + "done");
+            if(senderType == Observation.ANY_TREASURE){
+                if(((BaseExplorerAgent)this.myAgent).getMyType() == Observation.ANY_TREASURE){
+
+                    // No type , with empty backpacks
+                    int senderGoldBackPack = (int)((Couple)((ArrayList)sg.get("BackPack")).get(0)).getRight();
+                    int senderDiamondBackPack = (int)((Couple)((ArrayList)sg.get("BackPack")).get(1)).getRight();
+                    int myGoldBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(0)).getRight();
+                    int myDiamondBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(1)).getRight();
+                    int tempGold = totalGold- myGoldBackPack ;
+                    int tempDiamond = totalDiamond - myDiamondBackPack;
+
+                    if(tempGold>tempDiamond)
+                        totalGold -= senderGoldBackPack;
+                    else
+                        totalDiamond -= senderDiamondBackPack;
+
+                    if(totalGold>totalDiamond){
+                        ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
+                    }else{
+                        ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
+                    }
+                    ((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
+                }
+            }
+            else {
+                //sender already chose a type
+                if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE) {
+                    //current agent hasn't chosen a type yet , it will choose a type by taking the in consideration the the backpack of the agent it's communicating with
+                    // the backpacks of the agents it saw during the exploration phase
+                    if(senderType == GOLD)
+                        totalGold -= (int)sg.get("BackPack");
+                    if(senderType == DIAMOND)
+                        totalDiamond -= (int)sg.get("BackPack");
+                    if(totalGold>totalDiamond){
+                        ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
+                    }else{
+                        ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
+                    }
+                    ((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
+                }else{
+                    // both agents have already chosen a type
+                    // update the knowldge of each agent about the other (backpack wise)
+                    ((BaseExplorerAgent) this.myAgent).setAgentBelievedBackpack(msgReceived.getSender().getLocalName(), (int)sg.get("BackPack"));
+                    if(senderType == ((BaseExplorerAgent) this.myAgent).getMyType()){
+                        //if they're both headed for the same destination then
+                        if(((BaseExplorerAgent) this.myAgent).getCurrentDest() == senderDest){
+                            float myProp;
+                            if((myProp = ((BaseExplorerAgent) this.myAgent).getProp()) > senderProp ){
+                                //receiver changes his direction
+                                int collectedBySender = (int) ((1-senderProp)* (int)sg.get("BackPack"));
+                                ((BaseExplorerAgent) this.myAgent).updateTreasureQuantity(senderDest, collectedBySender);
+                                ((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
+                            }
+                        }
+                        //compare the back pack capacity of the of them and the one with the smallest percentage of used backpack goes to pick that treasure
+                        // the other recalculates its plan
+                    }
+                }
+            }
+            System.out.println( this.myAgent.getLocalName() + " done");
             ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(SendHelloBehaviour.behaviourName);
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    RestoreSendHelloBehaviour.behaviourName,
+                    new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1500)
+            );
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CollectTreasureBehavior.behaviourName, new CollectTreasureBehavior(this.myAgent));
             ((BaseExplorerAgent) this.myAgent).setBusy(false);
         }
 
