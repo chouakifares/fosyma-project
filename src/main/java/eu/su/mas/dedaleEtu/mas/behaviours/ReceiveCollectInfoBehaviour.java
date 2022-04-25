@@ -1,11 +1,9 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
-import dataStructures.serializableGraph.SerializableSimpleGraph;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.explo.BaseExplorerAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
@@ -47,44 +45,41 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                 e.printStackTrace();
             }
             String senderPos = (String) sg.get("position");
+            String senderName = (String) msgReceived.getSender().getLocalName();
             String senderDest = (String) sg.get("dest");
             float senderProp = (float)sg.get("prop");
             Observation senderType = (Observation) sg.get("type");
             List<Treasure> Treasures = (List) sg.get("Treasures");
             ((BaseExplorerAgent)this.myAgent).mergeTreasures(Treasures);
-            int totalGold = 0;
-            int totalDiamond = 0;
-            int totalBackPacks = 0;
-            List<Treasure> treasures = ((BaseExplorerAgent)this.myAgent).getTreasures();
-            Collections.sort(treasures);
-            for(Treasure t: treasures){
-                if(t.getType() == DIAMOND){
-                    totalDiamond+= t.getQuantity();
-                }
-                else if(t.getType() == GOLD){
-                    totalGold+= t.getQuantity();
-                }
-            }
+
             if(senderType == Observation.ANY_TREASURE){
                 if(((BaseExplorerAgent)this.myAgent).getMyType() == Observation.ANY_TREASURE){
-
                     // No type , with empty backpacks
                     int senderGoldBackPack = (int)((Couple)((ArrayList)sg.get("BackPack")).get(0)).getRight();
                     int senderDiamondBackPack = (int)((Couple)((ArrayList)sg.get("BackPack")).get(1)).getRight();
-                    int myGoldBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(0)).getRight();
-                    int myDiamondBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(1)).getRight();
-                    int tempGold = totalGold- myGoldBackPack ;
-                    int tempDiamond = totalDiamond - myDiamondBackPack;
-
-                    if(tempGold>tempDiamond)
-                        totalGold -= senderGoldBackPack;
-                    else
-                        totalDiamond -= senderDiamondBackPack;
-
-                    if(totalGold>totalDiamond){
-                        ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
+                    Observation senderPlanAD = this.computeSenderPlan(DIAMOND, senderDiamondBackPack, senderGoldBackPack);
+                    Observation senderPlanAG = this.computeSenderPlan(GOLD, senderDiamondBackPack, senderGoldBackPack);
+                    if(senderPlanAD == senderPlanAG){
+                        //update the agent's belief about the sender
+                        ((BaseExplorerAgent) this.myAgent).setAgentType(senderName, senderPlanAD);
+                        //compute the type of the agent with the new available knowledge
+                        ((BaseExplorerAgent) this.myAgent).setMyType(this.computeAgentPlan(senderPlanAG, senderDiamondBackPack, senderDiamondBackPack));
                     }else{
-                        ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
+                        Observation agentPlanSD = this.computeAgentPlan(DIAMOND, senderDiamondBackPack, senderGoldBackPack);
+                        Observation agentPlanSG = this.computeAgentPlan(GOLD, senderDiamondBackPack, senderGoldBackPack);
+                        if(agentPlanSD == agentPlanSG){
+                            Observation inferedSenderType = this.computeSenderPlan(agentPlanSD, senderDiamondBackPack, senderGoldBackPack);
+                            ((BaseExplorerAgent) this.myAgent).setAgentType(senderName, inferedSenderType);
+                            ((BaseExplorerAgent) this.myAgent).setMyType(agentPlanSD);
+                        }else{
+                            if(this.myAgent.getLocalName().compareTo(senderName)>0){
+                                ((BaseExplorerAgent) this.myAgent).setMyType(GOLD);
+                                ((BaseExplorerAgent) this.myAgent).setAgentType(senderName,DIAMOND);
+                            }else{
+                                ((BaseExplorerAgent) this.myAgent).setMyType(DIAMOND);
+                                ((BaseExplorerAgent) this.myAgent).setAgentType(senderName,GOLD);
+                            }
+                        }
                     }
                     ((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
                 }
@@ -94,6 +89,9 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                 if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE) {
                     //current agent hasn't chosen a type yet , it will choose a type by taking the in consideration the the backpack of the agent it's communicating with
                     // the backpacks of the agents it saw during the exploration phase
+                    Couple tmp = computeTotalRessources();
+                    int totalGold = (int) tmp.getLeft();
+                    int totalDiamond = (int) tmp.getRight();
                     if(senderType == GOLD)
                         totalGold -= (int)sg.get("BackPack");
                     if(senderType == DIAMOND)
@@ -138,6 +136,69 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
 
     }
 
+
+    public Observation computeSenderPlan(Observation agentType, int senderBackPackDiamond, int senderBackPackGold){
+        Couple temp = this.computeTotalRessources();
+        int totalGold = (int)temp.getLeft();
+        int totalDiamond = (int)temp.getRight();
+        int agentGoldBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(0)).getRight();
+        int agentDiamondBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(1)).getRight();
+        if(agentType==DIAMOND){
+            totalDiamond -= agentDiamondBackPack+((BaseExplorerAgent)this.myAgent).getSameTypeAgentBackPacks();
+        }else{
+            totalGold -= agentGoldBackPack +((BaseExplorerAgent) this.myAgent).getSameTypeAgentBackPacks();
+        }
+        if(totalGold > totalDiamond){
+            return GOLD;
+        }else if (totalGold < totalDiamond) {
+            return DIAMOND;
+        }else{
+            if(senderBackPackDiamond > senderBackPackGold){
+                return DIAMOND;
+            }else {
+                return GOLD;
+            }
+        }
+    }
+
+    public Observation computeAgentPlan(Observation agentType, int senderBackPackDiamond, int senderBackPackGold){
+        Couple temp = this.computeTotalRessources();
+        int totalGold = (int)temp.getLeft();
+        int totalDiamond = (int)temp.getRight();
+        int agentGoldBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(0)).getRight();
+        int agentDiamondBackPack = (int)((Couple)((ArrayList)((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace()).get(1)).getRight();
+        if(agentType==DIAMOND){
+            totalDiamond -= senderBackPackDiamond;
+        }else{
+            totalGold -= senderBackPackGold +((BaseExplorerAgent) this.myAgent).getSameTypeAgentBackPacks();
+        }
+        if(totalGold > totalDiamond){
+            return GOLD;
+        }else if (totalGold < totalDiamond) {
+            return DIAMOND;
+        }else{
+            if(agentDiamondBackPack > agentGoldBackPack){
+                return DIAMOND;
+            }else {
+                return GOLD;
+            }
+        }
+    }
+
+    public Couple computeTotalRessources(){
+        int totalGold = 0;
+        int totalDiamond = 0;
+        List<Treasure> treasures = ((BaseExplorerAgent)this.myAgent).getTreasures();
+        for(Treasure t: treasures){
+            if(t.getType() == DIAMOND){
+                totalDiamond+= t.getQuantity();
+            }
+            else if(t.getType() == GOLD){
+                totalGold+= t.getQuantity();
+            }
+        }
+        return new Couple(totalGold, totalDiamond);
+    }
 
     public boolean done(){return  !((BaseExplorerAgent) this.myAgent).getBehaviourStatus(behaviourName);}
 

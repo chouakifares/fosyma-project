@@ -1,0 +1,57 @@
+[
+  {
+    "agentType":"agentCollect",
+    "agentName": "1stAgent",
+    "communicationRange": 3,
+    "initialLocation": "1",
+    "backPackCapacityGold": 1000,
+    "backPackCapacityDiamond":2000,
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  {
+    "agentType":"agentCollect",
+    "agentName": "2ndAgent",
+    "communicationRange": 3,
+    "initialLocation": "2",
+    "backPackCapacityGold": 1000,
+    "backPackCapacityDiamond":2000,
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  {
+    "agentType":"agentCollect",
+    "agentName": "3rdAgent",
+    "communicationRange": 3,
+    "initialLocation": "14",
+    "backPackCapacityGold": 1000,
+    "backPackCapacityDiamond":2000,
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  {
+    "agentType":"agentCollect",
+    "agentName": "4thAgent",
+    "communicationRange": 3,
+    "initialLocation": "13",
+    "backPackCapacityGold": 1000,
+    "backPackCapacityDiamond":2000,
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  {
+    "agentType":"HumanControlled",
+    "agentName": "ImHere",
+    "communicationRange": 3,
+    "initialLocation": "42",
+    "backPackCapacityGold": -1,
+    "backPackCapacityDiamond":-1,
+    "detectionRadius": 1,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  }
+]

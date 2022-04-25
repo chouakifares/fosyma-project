@@ -98,6 +98,7 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
                 }else{
                     ((BaseExplorerAgent) this.myAgent).setCurrentDest(myNewDest.getLeft());
                 }
+                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreExploBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                         ExploCoopBehaviour.behaviourName,
                         new ExploCoopBehaviour((AbstractDedaleAgent) this.myAgent, ((BaseExplorerAgent) this.myAgent).getMap())
@@ -107,11 +108,10 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
                         RestoreSendHelloBehaviour.behaviourName,
                         new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1500)
                 );
-                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreExploBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).setBusy(false);
-                ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
                 System.out.println(this.myAgent.getLocalName() + ((BaseExplorerAgent) this.myAgent).Behaviourmap);
                 System.out.println("ReceiveInfo:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+                ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
             }
             else{
                 ((BaseExplorerAgent) this.myAgent).explorationDone();

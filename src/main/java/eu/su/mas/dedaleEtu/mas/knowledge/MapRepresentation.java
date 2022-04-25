@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
@@ -285,6 +286,10 @@ public class MapRepresentation implements Serializable {
 		viewer.addDefaultView(true);
 
 		g.display();
+	}
+
+	public Graph getGraph(){
+		return g;
 	}
 
 	public void mergeMap(SerializableSimpleGraph<String, MapAttribute> sgreceived) {

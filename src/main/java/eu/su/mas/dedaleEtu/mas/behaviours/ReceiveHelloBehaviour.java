@@ -24,6 +24,7 @@ public class ReceiveHelloBehaviour extends SimpleBehaviour {
             ((BaseExplorerAgent)this.myAgent).endBehaviour(SendHelloBehaviour.behaviourName);
             boolean samePhase = ( Integer.parseInt(msgHello.getContent())  == ((BaseExplorerAgent)this.myAgent).getPhase());
 
+
             //make the agents communicate even if they're not on the same phase
             ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                     SendACKBehaviour.behaviourName,

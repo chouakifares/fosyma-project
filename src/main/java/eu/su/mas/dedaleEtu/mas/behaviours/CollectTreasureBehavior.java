@@ -17,15 +17,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CollectTreasureBehavior extends SimpleBehaviour {
+
     public static String behaviourName="CollectTreasureBehavior";
     private boolean finished = false;
+    private String lastPosition = null;
+    private int nbBlocked = 0;
+    private int blockedLimit = 3;
+
+
     public CollectTreasureBehavior(Agent myAgent){
         super(myAgent);
     }
+
+
     public void action() {
         //agent doesn't know where to go
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
-            Couple<String , Integer> closestTreasure = findClosestPackableTreasure();
+            Couple<String, Integer> closestTreasure = findClosestPackableTreasure();
             if(closestTreasure!=null)
                 ((BaseExplorerAgent) this.myAgent).setCurrentDest(closestTreasure.getLeft());
         }
@@ -55,18 +63,18 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     switch (o.getLeft()) {
                         case DIAMOND:
                             treasureType = Observation.DIAMOND;
-                            if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE)
+                            if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
-                                break;
+                            break;
                         case GOLD:
                             treasureType = Observation.GOLD;
-                            if(((BaseExplorerAgent)this.myAgent).getMyType()== Observation.ANY_TREASURE)
+                            if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
-                                break;
+                            break;
                     }
                 }
-
                 if(treasureType!= null && ((BaseExplorerAgent)this.myAgent).getMyType() == treasureType) {
+
                     ((BaseExplorerAgent) this.myAgent).pick();
 
                 }
@@ -163,19 +171,25 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                 temp = packableTreasures;
             }
             // we look for the smallest treasure that the agent is able to carry
-            else{
+            else if (!smallestNonPackableTreasures.isEmpty()){
                 temp = smallestNonPackableTreasures;
             }
-            List<Couple<String,Integer>> lc=
-                    temp.stream()
-                            .map(on -> (((BaseExplorerAgent) this.myAgent).getMap().
-                                    getShortestPath(((BaseExplorerAgent) this.myAgent).getCurrentPosition(),on)!=null)?
-                                    new Couple<String, Integer>(on,((BaseExplorerAgent) this.myAgent).getMap().getShortestPath(((BaseExplorerAgent) this.myAgent)
-                                            .getCurrentPosition(),on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
-                            .collect(Collectors.toList());
+            if(temp != null){
+                List<Couple<String,Integer>> lc=
+                        temp.stream()
+                                .map(on -> (((BaseExplorerAgent) this.myAgent).getMap().
+                                        getShortestPath(((BaseExplorerAgent) this.myAgent).getCurrentPosition(),on)!=null)?
+                                        new Couple<String, Integer>(on,((BaseExplorerAgent) this.myAgent).getMap().getShortestPath(((BaseExplorerAgent) this.myAgent)
+                                                .getCurrentPosition(),on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
+                                .collect(Collectors.toList());
 
-            Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
-            return closest.get();
+                Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
+                return closest.get();
+            }
+            else{
+                System.out.println("test");
+            }
+
         }
         return null;
 

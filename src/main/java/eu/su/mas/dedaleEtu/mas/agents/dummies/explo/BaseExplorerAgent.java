@@ -27,6 +27,15 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     private boolean busy = false;
     private float prop = 0;
 
+    public int getSameTypeAgentBackPacks() {
+        return sameTypeAgentBackPacks;
+    }
+
+    public void increaseSameTypeAgentBackPacks(int sameTypeAgentBackPacks) {
+        this.sameTypeAgentBackPacks += sameTypeAgentBackPacks;
+    }
+
+    private int sameTypeAgentBackPacks = 0;
     public float getProp(){
         int available;
         if(this.myType == GOLD)
@@ -41,6 +50,7 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     public int getTotalSpace() {
         return totalSpace;
     }
+    private int old_phase = 0;
 
     private int totalSpace = 0;
     public boolean isFull() {
@@ -57,7 +67,32 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     }
 
     public void setPhase(int phase) {
+        if(this.phase != 2)
+            old_phase = this.phase;
         this.phase = phase;
+    }
+
+    public int getCapacity(){
+        BaseExplorerAgent myAgent = this;
+        int myCapacity = 0;
+        Observation myAgentType = ((BaseExplorerAgent) myAgent).getMyTreasureType();
+        switch (myAgentType){
+            case ANY_TREASURE: ;
+                if (((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight() < ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight()){
+                    myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight();
+                } else {
+                    myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
+                }
+            case DIAMOND:
+                myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight();
+            case GOLD:
+                myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
+        }
+        return myCapacity;
+    }
+
+    public int getOldPhase(){
+        return old_phase;
     }
 
     private int phase = 0;
@@ -188,12 +223,11 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         lb.add(move);
         addBehaviour(new startMyBehaviours(this,lb));
         System.out.println("the  agent "+this.getLocalName()+ " is started");
+
     }
     // sets a bahvior states to  false in order to use it in the done methode of that behaviour
     public void endBehaviour(String toDelete) {
             this.Behaviourmap.get(toDelete).put("active", false);
-
-
     }
     // add behaviour to the map of behaviours used in exploration , if the behaviour already exists it sets it to active again
     public void addBehaviourToBehaviourMap(String toAdd, Behaviour bToAdd){
@@ -236,6 +270,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setCurrentDest(String currentDest) {
         this.currentDest = currentDest;
+    }
+
+    public boolean getExplorationStatus(){
+        return explorationDone;
     }
 
 
@@ -311,27 +349,6 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         */
     }
 
-    private static HashMap sortHashMapValues(HashMap map) {
-        List list = new LinkedList(map.entrySet());
-        //Custom Comparator
-        Collections.sort(list, new Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
-            }
-        });
-        //copying the sorted list in HashMap to preserve the iteration order
-        HashMap sortedHashMap = new LinkedHashMap();
-        for (Iterator it = list.iterator(); it.hasNext();)
-        {
-            Map.Entry entry = (Map.Entry) it.next();
-            sortedHashMap.put(entry.getKey(), entry.getValue());
-        }
-        return sortedHashMap;
-    }
-
-
     public void addTreasure(Treasure t){
         if (! treasures.contains(t)){
             treasures.add(t);
@@ -344,5 +361,14 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setAgentBelievedBackpack(String agentName, int backPack){
         this.agentBeliefs.get(agentName).put("BackPack", backPack);
+    }
+
+    public void setAgentType(String agentName, Observation type){
+        this.agentBeliefs.get(agentName).put("type", type);
+    }
+
+    public void setExplorationDone(boolean b){
+        explorationDone = b;
+
     }
 }
