@@ -37,7 +37,9 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     }
 
     public void setPhase(int phase) {
-        old_phase = this.phase;
+        if (this.phase !=2) {
+            old_phase = this.phase;
+        }
         this.phase = phase;
     }
 
@@ -145,7 +147,7 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         temp.put("active", true);
         Behaviourmap.put(ExploCoopBehaviour.behaviourName, temp);
         temp = new HashMap();
-        lb.add(helloBehaviour);
+//        lb.add(helloBehaviour);
         lb.add(move);
         addBehaviour(new startMyBehaviours(this,lb));
         System.out.println("the  agent "+this.getLocalName()+ " is started");

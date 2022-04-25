@@ -46,7 +46,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 		if (((BaseExplorerAgent) this.myAgent).getPhase()!=2) {
-			System.out.println("JE SUIS "+myAgent.getLocalName()+ "JEXECUTE EXPLO");
+			System.out.println(myAgent.getLocalName() + " j'exécute explo");
 			if (this.myMap == null) {
 				((BaseExplorerAgent) this.myAgent).setMap(new MapRepresentation());
 				this.myMap = ((BaseExplorerAgent) this.myAgent).getMap();
@@ -64,7 +64,8 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 					lastPosition = myPosition;
 					nbBlocked = 0;
 				}
-				if (nbBlocked == blockedLimit) {
+				if (nbBlocked >= blockedLimit) {
+					nbBlocked = 0;
 					if (this.myMap.getGraph().getNode(myPosition) != null) {
 						int isLeader = 0;
 						if (this.myMap.getGraph().getNode(myPosition).getDegree() == 1) {
@@ -72,7 +73,8 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						} else if (this.myMap.getGraph().getNode(myPosition).getDegree() == 2) {
 
 						}
-						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, nextPosition, ((BaseExplorerAgent)myAgent).getCapacity());
+						System.out.println(myAgent.getLocalName() + " Send explo block " + myPosition + " ---> "+ nextPosition + " ------> " + ((BaseExplorerAgent)myAgent).getCurrentDest());
+						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent)myAgent).getCurrentDest(), ((BaseExplorerAgent)myAgent).getCapacity());
 						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
 
 					}

@@ -81,8 +81,8 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2021-topologyExam1-tree.dgs";
 //	public static String INSTANCE_TOPOLOGY="resources/topology/mapInterlocking2-topology";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2021-topologyExam1-graph.dgs";
-//	public static String INSTANCE_TOPOLOGY="resources/topology/map2018-topology";
-	public static String INSTANCE_TOPOLOGY="resources/topology/customMap";
+	public static String INSTANCE_TOPOLOGY="resources/topology/map2018-topology";
+//	public static String INSTANCE_TOPOLOGY="resources/topology/customMap";
 
 	//public static String INSTANCE_TOPOLOGY="resources/map2019-topologyExam1";
 
@@ -96,10 +96,10 @@ public final class ConfigurationFile {
 	// otherwise
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2019-elementsExam1";
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/Houat-elements";
-//	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2018-elements";
-//	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/interlocking/mapInterlocking2-elements";
+	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2018-elements";
+//	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/interlocking/mapInterlocking2-eslements";
 //	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/mapInterlocking2-elements";
-	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/topology/customElements";
+//	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/topology/customElements";
 
 	
 	
@@ -152,8 +152,8 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExplo";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExplo-2";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExploCoop-2";
-//	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExploCoop-2.json";
-	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/custom.json";
+	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExploCoop-2.json";
+//	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/custom.json";
 
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentKeyboardControlled";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/hunt/map2020-entitiesTree";

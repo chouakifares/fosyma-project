@@ -272,7 +272,7 @@ public class Principal {
 		}
 
 
-		int NB_AGENTS = 2;
+		int NB_AGENTS = 4;
 
 		/************************************************************************************************
 		 * The main container (now) exist, we deploy the agent(s) on  their local containers

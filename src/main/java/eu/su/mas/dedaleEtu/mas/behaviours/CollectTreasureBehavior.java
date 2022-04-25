@@ -30,16 +30,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
 
 
     public void action() {
-        // Test si l'agent est potentiellement bloqué
-//        if (lastPosition == ((AbstractDedaleAgent)this.myAgent).getCurrentPosition())
-//            nbBlocked++;
-//        else {
-//            lastPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
-//            nbBlocked = 0;
-//        }
-//        if (nbBlocked == blockedLimit){
-//            SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent,  );
-//        }
+        System.out.println(myAgent.getLocalName() + "j'exécute COLLECTE");
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
             Couple<String, Integer> closestTreasure = findClosestPackableTreasure();
             if(closestTreasure!=null)
@@ -53,7 +44,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                 String currentPos = ((BaseExplorerAgent) this.myAgent).getCurrentPosition();
                 if(currentPos != ((BaseExplorerAgent) this.myAgent).getCurrentDest()) {
                     try {
-                        this.myAgent.doWait(200);
+                        this.myAgent.doWait(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
