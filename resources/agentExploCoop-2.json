@@ -26,8 +26,8 @@
     "agentName": "3rdAgent",
     "communicationRange": 3,
     "initialLocation": "free",
-    "backPackCapacityGold": 1000,
-    "backPackCapacityDiamond":2000,
+    "backPackCapacityGold": 100,
+    "backPackCapacityDiamond":200,
     "detectionRadius": 0,
     "strengthExpertise": 1,
     "lockPickingExpertise":1
@@ -37,8 +37,8 @@
     "agentName": "4thAgent",
     "communicationRange": 3,
     "initialLocation": "free",
-    "backPackCapacityGold": 1000,
-    "backPackCapacityDiamond":2000,
+    "backPackCapacityGold": 100,
+    "backPackCapacityDiamond":200,
     "detectionRadius": 0,
     "strengthExpertise": 1,
     "lockPickingExpertise":1
@@ -50,7 +50,7 @@
   "initialLocation": "free",
   "backPackCapacityGold": -1,
   "backPackCapacityDiamond":-1, 
-  "detectionRadius": 1,
+  "detectionRadius": 0,
   "strengthExpertise": 1,
   "lockPickingExpertise":1
   }

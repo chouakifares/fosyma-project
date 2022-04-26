@@ -32,6 +32,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
 
     public void action() {
         //agent doesn't know where to go
+        System.out.println(myAgent.getLocalName() + "j'exécute COLLECTE");
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
             Couple<String, Integer> closestTreasure = findClosestPackableTreasure();
             if(closestTreasure!=null)
@@ -48,7 +49,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                 String currentPos = ((BaseExplorerAgent) this.myAgent).getCurrentPosition();
                 if(currentPos != ((BaseExplorerAgent) this.myAgent).getCurrentDest()) {
                     try {
-                        this.myAgent.doWait(200);
+                        this.myAgent.doWait(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

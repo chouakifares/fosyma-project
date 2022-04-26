@@ -24,15 +24,16 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
     private int isLeader;
     private int capacity;
 
-    public SendBlockedBehaviour(final Agent myAgent, int isLeader, String nextPosition, int capacity) {
+    private String myPosition;
+
+    public SendBlockedBehaviour(final Agent myAgent, int isLeader, String myPosition, String nextPosition, String finalDestination, int capacity) {
         super(myAgent);
         this.isLeader = isLeader;
         this.nextPosition = nextPosition;
         this.capacity = capacity;
+        this.myPosition = myPosition;
+        this.finalDestination = finalDestination;
     }
-
-
-
 
     @Override
     public void action() {
@@ -43,11 +44,11 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
         HashMap tmp = new HashMap();
         tmp.put("nextPosition", nextPosition);
         tmp.put("isLeader", Integer.toString(isLeader));
-        tmp.put("senderPosition",((BaseExplorerAgent)myAgent).getCurrentPosition());
-        if (((BaseExplorerAgent)myAgent).getCurrentDest() == null) {
+        tmp.put("senderPosition",myPosition);
+        if (finalDestination == null) {
             tmp.put("finalDestination", nextPosition);
         } else {
-            tmp.put("finalDestination", ((BaseExplorerAgent) myAgent).getCurrentDest());
+            tmp.put("finalDestination", finalDestination);
         }
         tmp.put("capacity", Integer.toString(capacity));
         tmp.put("map", ((BaseExplorerAgent)myAgent).getMap().getSerializableGraph());
@@ -64,7 +65,10 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
             msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
         }
 
-        System.out.println("Send Blocked: "+this.myAgent.getLocalName()+" : "+((BaseExplorerAgent) this.myAgent).getCurrentPosition()+" -> "+ nextPosition + " ---> "+((BaseExplorerAgent)myAgent).getCurrentDest());
+
+
+
+        System.out.println("Send Blocked: "+this.myAgent.getLocalName()+" : "+myPosition+" -> "+ nextPosition + " ---> "+finalDestination);
         ((BaseExplorerAgent)myAgent).addBehaviourToBehaviourMap(ReceiveBlockedBehaviour.behaviourName, new ReceiveBlockedBehaviour((AbstractDedaleAgent) this.myAgent));
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
     }
