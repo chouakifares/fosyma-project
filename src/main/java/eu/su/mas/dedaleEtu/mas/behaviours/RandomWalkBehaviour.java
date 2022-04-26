@@ -40,7 +40,7 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
 			try {
-				this.myAgent.doWait(3000);
+				this.myAgent.doWait(200);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

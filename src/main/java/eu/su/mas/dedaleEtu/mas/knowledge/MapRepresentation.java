@@ -42,8 +42,7 @@ public class MapRepresentation implements Serializable {
 	 */
 
 	public enum MapAttribute {	
-		agent,open,closed;
-
+		agent,open, closed, blocked;
 	}
 
 	private static final long serialVersionUID = -1333959882640838272L;
@@ -138,6 +137,20 @@ public class MapRepresentation implements Serializable {
 	 */
 	public synchronized List<String> getShortestPath(String idFrom,String idTo){
 		List<String> shortestPath=new ArrayList<String>();
+//		Graph filteredGraph = new SingleGraph("Graph without blocked nodes");
+//		List<Node> freeNodesList = new ArrayList<Node>();
+//		for (Iterator<Node> it = g.nodes().iterator(); it.hasNext(); ) {
+//			Node n = it.next();
+//			if ( ! n.getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())){
+//				freeNodesList.add(n);
+//			}
+//		}
+//		for (Node n: freeNodesList){
+//			Node newN;
+//			filteredGraph.addNode(n.getId());
+//			filteredGraph.getNode(n.getId()).clearAttributes();
+//			filteredGraph.
+//		}
 
 		Dijkstra dijkstra = new Dijkstra();//number of edge
 		dijkstra.init(g);

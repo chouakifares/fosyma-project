@@ -47,7 +47,7 @@
     "agentType":"HumanControlled",
     "agentName": "ImHere",
     "communicationRange": 3,
-    "initialLocation": "42",
+    "initialLocation": "13",
     "backPackCapacityGold": -1,
     "backPackCapacityDiamond":-1,
     "detectionRadius": 1,

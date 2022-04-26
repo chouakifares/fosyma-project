@@ -11,6 +11,7 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import org.glassfish.pfl.basic.fsm.Guard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,6 +87,12 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
             } catch (UnreadableException e) {
                 e.printStackTrace();
             }
+            if (((BaseExplorerAgent)myAgent).getBehaviourStatus(ConfirmWumpusBehaviour.behaviourName+senderPosition) != null){
+                ((BaseExplorerAgent)myAgent).endBehaviour(ConfirmWumpusBehaviour.behaviourName+senderPosition);
+            }
+
+
+
 
             // Checking if I'm targetted by the message
             if (nextPosition.equals(((BaseExplorerAgent) myAgent).getCurrentPosition())) { // if I am the one who is blocking
@@ -100,7 +107,7 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
                         UnblockBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
                         ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);
                     }
-                } else if(isLeader == 2) {
+                } else if(isLeader == 2) { //TODO: in case we want to setup a priority protocole
 
                 }
                 else { // he's not in a cul de sac

@@ -71,6 +71,9 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						if (this.myMap.getGraph().getNode(myPosition).getDegree() == 1) {
 							isLeader = 1;
 						}
+						if (myMap.getGraph().getNode(nextPosition).getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())){
+							System.out.println("J'ESSSSSSSSSAAAAAAAYE DALLER AU WUMPUUUS");
+						}
 						System.out.println(myAgent.getLocalName() + " Send explo block " + myPosition + " ---> "+ nextPosition + " ------> " + ((BaseExplorerAgent)myAgent).getCurrentDest());
 						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent)myAgent).getCurrentDest(), ((BaseExplorerAgent)myAgent).getCapacity());
 						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);

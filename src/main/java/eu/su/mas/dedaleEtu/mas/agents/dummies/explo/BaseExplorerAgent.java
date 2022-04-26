@@ -223,7 +223,6 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         lb.add(move);
         addBehaviour(new startMyBehaviours(this,lb));
         System.out.println("the  agent "+this.getLocalName()+ " is started");
-
     }
     // sets a bahvior states to  false in order to use it in the done methode of that behaviour
     public void endBehaviour(String toDelete) {
@@ -241,7 +240,14 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     public HashMap getBehaviour(String bName){ return Behaviourmap.get(bName);}
 
     //returns the state of a behaviour (wether it's active or finished)
-    public Boolean getBehaviourStatus(String bName){return (Boolean) Behaviourmap.get(bName).get("active");}
+    public Boolean getBehaviourStatus(String bName){
+        try {
+            return (Boolean) Behaviourmap.get(bName).get("active");
+        }
+        catch (NullPointerException e){
+            return null;
+        }
+    }
 
     public List<String> getList_agentNames(){
         return list_agentNames;

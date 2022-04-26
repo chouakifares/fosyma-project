@@ -85,7 +85,6 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_TOPOLOGY="resources/topology/customMap";
 	public static String INSTANCE_TOPOLOGY="resources/topology/map2018-topology";
 //	public static String INSTANCE_TOPOLOGY="resources/topology/customMap";
-
 	//public static String INSTANCE_TOPOLOGY="resources/map2019-topologyExam1";
 
 	
@@ -161,7 +160,7 @@ public final class ConfigurationFile {
 	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExploCoop-2.json";
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentKeyboardConMANUALtrolled";
 	//	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExploCoop-2.json";
-	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/custom.json";
+//	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/custom.json";
 
 
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentKeyboardControlled";
