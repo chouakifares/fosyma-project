@@ -29,7 +29,12 @@ public class ShareCollectInfoBehaviour extends OneShotBehaviour {
         msg.addReceiver(new AID(receiver,AID.ISLOCALNAME));
         Observation type = ((BaseExplorerAgent) this.myAgent).getMyType();
         HashMap temp = new HashMap();
+
+
+        temp.put("prop", ((BaseExplorerAgent) this.myAgent).getProp());
+        temp.put("Treasures", ((BaseExplorerAgent) this.myAgent).getTreasures());
         temp.put("type", type);
+        temp.put("dest", ((BaseExplorerAgent) this.myAgent).getCurrentDest());
         temp.put("position", ((BaseExplorerAgent) this.myAgent).getCurrentPosition());
         if(type == Observation.ANY_TREASURE)
             temp.put("BackPack", ((BaseExplorerAgent) this.myAgent).getBackPackFreeSpace());

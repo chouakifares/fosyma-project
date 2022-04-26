@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
@@ -56,15 +57,6 @@ public class MapRepresentation implements Serializable {
 	private String nodeStyle_agent = "node.open {"+"fill-color: blue;"+"}";
 	private String nodeStyle=defaultNodeStyle+nodeStyle_agent+nodeStyle_open;
 
-	public boolean isContainsDiamond() {
-		return containsDiamond;
-	}
-
-	public void setContainsDiamond(boolean containsDiamond) {
-		this.containsDiamond = containsDiamond;
-	}
-
-	private boolean containsDiamond;
 	private Graph g; //data structure non serializable
 	private Viewer viewer; //ref to the display,  non serializable
 	private Integer nbEdges;//used to generate the edges ids
@@ -294,6 +286,10 @@ public class MapRepresentation implements Serializable {
 		viewer.addDefaultView(true);
 
 		g.display();
+	}
+
+	public Graph getGraph(){
+		return g;
 	}
 
 	public void mergeMap(SerializableSimpleGraph<String, MapAttribute> sgreceived) {

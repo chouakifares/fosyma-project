@@ -11,6 +11,7 @@ public class SendACKBehaviour extends OneShotBehaviour {
     public static String behaviourName = "sendACK" ;
     public static String protocol = "myACKToken";
     private int samePhase = 0;
+
     public SendACKBehaviour(AbstractDedaleAgent a, String receiver, boolean samePhase){
         super(a);
         this.receiver = receiver;

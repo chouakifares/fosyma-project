@@ -27,8 +27,11 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 	 * Current knowledge of the agent regarding the environment
 	 */
 	private MapRepresentation myMap;
-
+	private int blockedLimit = 1;
+	private int nbBlocked = 0;
+	private String lastPosition = null;
 	private List<String> list_agentNames;
+	private String nextPosition;
 
 /**
  * 
@@ -38,90 +41,108 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 	public ExploCoopBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap) {
 		super(myagent);
 		this.myMap=myMap;
-
-		
 	}
 
 	@Override
 	public void action() {
-
-		if(this.myMap==null) {
-			((BaseExplorerAgent) this.myAgent).setMap(new MapRepresentation()) ;
-			this.myMap = ((BaseExplorerAgent) this.myAgent).getMap();
-		}
-
-		//0) Retrieve the current position
-		String myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
-
-		if (myPosition!=null){
-
-			//List of observable from the agent's current position
-			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
-
-			/**
-			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
-			 */
-			try {
-				this.myAgent.doWait(200);
-			} catch (Exception e) {
-				e.printStackTrace();
+		if (((BaseExplorerAgent) this.myAgent).getPhase()!=2) {
+			System.out.println("JE SUIS "+myAgent.getLocalName()+ "JEXECUTE EXPLO");
+			if (this.myMap == null) {
+				((BaseExplorerAgent) this.myAgent).setMap(new MapRepresentation());
+				this.myMap = ((BaseExplorerAgent) this.myAgent).getMap();
 			}
 
-			//1) remove the current node from openlist and add it to closedNodes.
-			this.myMap.addNode(myPosition, MapAttribute.closed);
+			//0) Retrieve the current position
+			String myPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
 
-			//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
-			String nextNode=null;
-			Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter=lobs.iterator();
-			while(iter.hasNext()){
-				String nodeId=iter.next().getLeft();
-				boolean isNewNode=this.myMap.addNewNode(nodeId);
-				//the node may exist, but not necessarily the edge
-				if (myPosition!=nodeId) {
-					this.myMap.addEdge(myPosition, nodeId);
-					if (nextNode==null && isNewNode) nextNode=nodeId;
+			if (myPosition != null) {
+
+				// Test si l'agent est potentiellement bloqué
+				if (lastPosition == myPosition)
+					nbBlocked++;
+				else {
+					lastPosition = myPosition;
+					nbBlocked = 0;
 				}
-			}
-
-			//3) while openNodes is not empty, continues.
-			if (!this.myMap.hasOpenNode()){
-				((BaseExplorerAgent)this.myAgent).endBehaviour(behaviourName);
-				System.out.println(this.myAgent.getLocalName()+" - Exploration successufully done, behaviour removed.");
-				((BaseExplorerAgent)this.myAgent).explorationDone();
-			}else{
-				//4) select next move.
-				//4.1 If there exist one open node directly reachable, go for it,
-				//	 otherwise choose one from the openNode list, compute the shortestPath and go for it
-				if (nextNode==null){
-					if(((BaseExplorerAgent)this.myAgent).getCurrentDest()!=null) {
-						List<String> next = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest());
-						if(next.size() > 0) {
-							nextNode = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest()).get(0);//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
+				if (nbBlocked == blockedLimit) {
+					if (this.myMap.getGraph().getNode(myPosition) != null) {
+						int isLeader = 0;
+						if (this.myMap.getGraph().getNode(myPosition).getDegree() == 1) {
+							isLeader = 1;
 						}
+						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, nextPosition, ((BaseExplorerAgent)myAgent).getCapacity());
+						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
+
 					}
 				}
-			if(((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName) && nextNode != null) {
-				if(nextNode == ((BaseExplorerAgent) this.myAgent).getCurrentDest())
-					((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
 
-				((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
 
+				//List of observable from the agent's current position
+				List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent).observe();//myPosition
+
+				/**
+				 * Just added here to let you see what the agent is doing, otherwise he will be too quick
+				 */
+				try {
+					this.myAgent.doWait(200);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				//1) remove the current node from openlist and add it to closedNodes.
+				this.myMap.addNode(myPosition, MapAttribute.closed);
+
+				//2) get the surrounding nodes and, if not in closedNodes, add them to open nodes.
+				String nextNode = null;
+				Iterator<Couple<String, List<Couple<Observation, Integer>>>> iter = lobs.iterator();
+				while (iter.hasNext()) {
+					String nodeId = iter.next().getLeft();
+					boolean isNewNode = this.myMap.addNewNode(nodeId);
+					//the node may exist, but not necessarily the edge
+					if (myPosition != nodeId) {
+						this.myMap.addEdge(myPosition, nodeId);
+						if (nextNode == null && isNewNode) nextNode = nodeId;
+					}
+				}
+
+				//3) while openNodes is not empty, continues.
+				if (!this.myMap.hasOpenNode()) {
+					((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
+					System.out.println(this.myAgent.getLocalName() + " - Exploration successufully done, behaviour removed.");
+					((BaseExplorerAgent) this.myAgent).explorationDone();
+				} else {
+					//4) select next move.
+					//4.1 If there exist one open node directly reachable, go for it,
+					//	 otherwise choose one from the openNode list, compute the shortestPath and go for it
+					if (nextNode == null) {
+						if (((BaseExplorerAgent) this.myAgent).getCurrentDest() != null) {
+							List<String> next = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest());
+							if (next.size() > 0) {
+								nextNode = this.myMap.getShortestPath(myPosition, ((BaseExplorerAgent) this.myAgent).getCurrentDest()).get(0);//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
+							}
+						}
+					}
+					if (((BaseExplorerAgent) this.myAgent).getBehaviourStatus(behaviourName) && nextNode != null) {
+						if (nextNode == ((BaseExplorerAgent) this.myAgent).getCurrentDest())
+							((BaseExplorerAgent) this.myAgent).setCurrentDest(null);
+
+
+						nextPosition = nextNode;
+						((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
+					}
+				}
+
+				for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
+					switch (o.getLeft()) {
+						case DIAMOND:
+						case GOLD:
+							// ADD THE TREASURE TO THE LIST
+							((BaseExplorerAgent) this.myAgent).openLock(o.getLeft());
+							Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight(), Instant.now().toEpochMilli());
+							((BaseExplorerAgent) myAgent).addTreasure(t);
+					}
+				}
 			}
-		}
-
-		for (Couple <Observation, Integer> o: lobs.get(0).getRight()){
-			switch (o.getLeft()){
-				case DIAMOND:
-					((BaseExplorerAgent) this.myAgent).getMap().setContainsDiamond(true);
-					case GOLD:
-					// ADD THE TREASURE TO THE LIST
-					Treasure t = new Treasure(myPosition, o.getLeft(), o.getRight(),Instant.now().toEpochMilli());
-					((BaseExplorerAgent)myAgent).addTreasure(t);
-			}
-		}
-
-
-
 		}
 	}
 

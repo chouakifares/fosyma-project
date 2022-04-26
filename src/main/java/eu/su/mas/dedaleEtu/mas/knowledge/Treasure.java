@@ -11,11 +11,18 @@ public class Treasure implements Serializable , Comparable{
     private final Observation type;
     private Integer value;
     private long obsTime = 0;
+
+
+
     public Treasure(String position, Observation type, Integer value, long t){
         this.position = position;
         this.type = type;
         this.value = value;
         this.obsTime = t;
+    }
+
+    public long getObsTime() {
+        return obsTime;
     }
 
     public String getPosition() {

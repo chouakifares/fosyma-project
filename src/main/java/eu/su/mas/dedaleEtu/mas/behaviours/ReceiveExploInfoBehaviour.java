@@ -5,6 +5,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.explo.BaseExplorerAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
+import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -13,6 +14,7 @@ import jade.lang.acl.UnreadableException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
 
@@ -36,11 +38,17 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
             }
             String senderPosition = null;
             SerializableSimpleGraph<String, MapRepresentation.MapAttribute> sgreceived=null;
+            List<Treasure> senderTreasures = null;
             try {
                 if(((HashMap)msgReceived.getContentObject()).containsKey("map")) {
                     sgreceived = (SerializableSimpleGraph<String, MapRepresentation.MapAttribute>) ((HashMap) msgReceived.getContentObject()).get("map");
                     //updata map
                     currentMap.mergeMap(sgreceived);
+                }
+                if(((HashMap)msgReceived.getContentObject()).containsKey("treasure")) {
+                     senderTreasures = (List<Treasure>) ((HashMap)msgReceived.getContentObject()).get("treasure");
+                    //updata map
+                    ((BaseExplorerAgent) this.myAgent).mergeTreasures(senderTreasures);
                 }
             } catch (UnreadableException e) {
                 e.printStackTrace();
@@ -90,6 +98,7 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
                 }else{
                     ((BaseExplorerAgent) this.myAgent).setCurrentDest(myNewDest.getLeft());
                 }
+                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreExploBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                         ExploCoopBehaviour.behaviourName,
                         new ExploCoopBehaviour((AbstractDedaleAgent) this.myAgent, ((BaseExplorerAgent) this.myAgent).getMap())
@@ -97,13 +106,12 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
                 ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
                         RestoreSendHelloBehaviour.behaviourName,
-                        new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
+                        new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1500)
                 );
-                ((BaseExplorerAgent)this.myAgent).endBehaviour(RestoreExploBehaviour.behaviourName);
                 ((BaseExplorerAgent) this.myAgent).setBusy(false);
-                ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
                 System.out.println(this.myAgent.getLocalName() + ((BaseExplorerAgent) this.myAgent).Behaviourmap);
                 System.out.println("ReceiveInfo:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+                ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
             }
             else{
                 ((BaseExplorerAgent) this.myAgent).explorationDone();

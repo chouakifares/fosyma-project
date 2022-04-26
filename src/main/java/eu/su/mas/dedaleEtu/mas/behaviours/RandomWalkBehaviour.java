@@ -27,7 +27,7 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 	private static final long serialVersionUID = 9088209402507795289L;
 
 	public RandomWalkBehaviour (final AbstractDedaleAgent myagent) {
-		super(myagent, 500);
+		super(myagent, 1000);
 	}
 
 	@Override
@@ -39,7 +39,11 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 			//List of observable from the agent's current position
 			List<Couple<String,List<Couple<Observation,Integer>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
 			System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
-			
+			try {
+				this.myAgent.doWait(3000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			//list of observations associated to the currentPosition
 			List<Couple<Observation,Integer>> lObservations= lobs.get(0).getRight();
 
@@ -51,6 +55,16 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 			//Random move from the current position
 			Random r= new Random();
 			int moveId=1+r.nextInt(lobs.size()-1);//removing the current position from the list of target, not necessary as to stay is an action but allow quicker random move
+
+
+			/**
+			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
+			 */
+			try {
+				this.myAgent.doWait(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			//The move action (if any) should be the last action of your behaviour
 			((AbstractDedaleAgent)this.myAgent).moveTo(lobs.get(moveId).getLeft());

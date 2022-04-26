@@ -1,8 +1,10 @@
 package eu.su.mas.dedaleEtu.mas.agents.dummies.explo;
 
 
+import java.time.Instant;
 import java.util.*;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.startMyBehaviours;
@@ -16,12 +18,41 @@ import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.behaviours.Behaviour;
 
 import static eu.su.mas.dedale.env.Observation.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class BaseExplorerAgent extends AbstractDedaleAgent {
     private static final long serialVersionUID = -7969469610241668140L;
     private MapRepresentation myMap;
     private boolean busy = false;
+    private float prop = 0;
 
+    public int getSameTypeAgentBackPacks() {
+        return sameTypeAgentBackPacks;
+    }
+
+    public void increaseSameTypeAgentBackPacks(int sameTypeAgentBackPacks) {
+        this.sameTypeAgentBackPacks += sameTypeAgentBackPacks;
+    }
+
+    private int sameTypeAgentBackPacks = 0;
+    public float getProp(){
+        int available;
+        if(this.myType == GOLD)
+            available  = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(0)).getRight();
+        else
+            available  = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(1)).getRight();
+        if(totalSpace!=0)
+            return (this.totalSpace - available)/this.totalSpace;
+        return 0;
+    }
+
+    public int getTotalSpace() {
+        return totalSpace;
+    }
+    private int old_phase = 0;
+
+    private int totalSpace = 0;
     public boolean isFull() {
         return full;
     }
@@ -36,7 +67,32 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     }
 
     public void setPhase(int phase) {
+        if(this.phase != 2)
+            old_phase = this.phase;
         this.phase = phase;
+    }
+
+    public int getCapacity(){
+        BaseExplorerAgent myAgent = this;
+        int myCapacity = 0;
+        Observation myAgentType = ((BaseExplorerAgent) myAgent).getMyTreasureType();
+        switch (myAgentType){
+            case ANY_TREASURE: ;
+                if (((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight() < ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight()){
+                    myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight();
+                } else {
+                    myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
+                }
+            case DIAMOND:
+                myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(1).getRight();
+            case GOLD:
+                myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
+        }
+        return myCapacity;
+    }
+
+    public int getOldPhase(){
+        return old_phase;
     }
 
     private int phase = 0;
@@ -47,6 +103,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setMyType(Observation myType) {
         this.myType = myType;
+        if(myType == GOLD)
+            this.totalSpace = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(0)).getRight();
+        else
+            this.totalSpace = (int)((Couple)((ArrayList)this.getBackPackFreeSpace()).get(1)).getRight();
     }
 
     private Observation myType = ANY_TREASURE;
@@ -70,12 +130,51 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     public List<Treasure> getTreasures() {
         return treasures;
     }
-    public void deleteTreasure(String Pos){
-        for(int i=0 ; i<this.treasures.size(); i++)
-            if(this.treasures.get(i).getPosition()==Pos){
+    public void updateTreasure(String Pos, Observation obs,int quantity, long t){
+        for(int i=0 ; i<this.treasures.size(); i++) {
+            if (this.treasures.get(i).getPosition() == Pos) {
                 this.treasures.remove(i);
             }
+        }
+        this.treasures.add(new Treasure(Pos, obs, quantity, t));
     }
+
+
+    public void updateTreasureQuantity(String Pos, int collectedQuantity){
+        Observation obs = null;
+        int initialQuantity = 0;
+        for(int i=0 ; i<this.treasures.size(); i++) {
+            if (this.treasures.get(i).getPosition() == Pos) {
+                obs = this.treasures.get(i).getType();
+                initialQuantity = this.treasures.get(i).getQuantity();
+                this.treasures.remove(i);
+            }
+        }
+        this.treasures.add(new Treasure(Pos, obs, max(initialQuantity - collectedQuantity,0), Instant.now().toEpochMilli()));
+    }
+
+    //Merges a list a of treasure that agent A receives from agent B
+    public void mergeTreasures(List<Treasure> t) {
+        for (int j = 0; j < t.size(); j++) {
+            boolean in = false;
+            Treasure tr = t.get(j);
+            for (int i = 0; i < this.treasures.size(); i++) {
+                in = true;
+                if(this.treasures.get(i).getPosition() == t.get(j).getPosition()) {
+                    //update the trasure if the
+                    if (this.treasures.get(i).getObsTime() < t.get(j).getObsTime())
+                        this.updateTreasure(tr.getPosition(), tr.getType(), tr.getQuantity(), tr.getObsTime());
+
+                }
+            }
+            // the agent hasn't find this treasure yet
+            if(!in){
+                //add the treasure to the agent's treasure list
+                this.treasures.add(new Treasure(tr.getPosition(), tr.getType(), tr.getQuantity(), tr.getObsTime()));
+            }
+        }
+    }
+
 
     // list of the agent's beliefs about other agents
     private HashMap<String, HashMap> agentBeliefs = new HashMap<String, HashMap>();
@@ -124,12 +223,11 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         lb.add(move);
         addBehaviour(new startMyBehaviours(this,lb));
         System.out.println("the  agent "+this.getLocalName()+ " is started");
+
     }
     // sets a bahvior states to  false in order to use it in the done methode of that behaviour
     public void endBehaviour(String toDelete) {
             this.Behaviourmap.get(toDelete).put("active", false);
-
-
     }
     // add behaviour to the map of behaviours used in exploration , if the behaviour already exists it sets it to active again
     public void addBehaviourToBehaviourMap(String toAdd, Behaviour bToAdd){
@@ -172,6 +270,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setCurrentDest(String currentDest) {
         this.currentDest = currentDest;
+    }
+
+    public boolean getExplorationStatus(){
+        return explorationDone;
     }
 
 
@@ -247,27 +349,6 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         */
     }
 
-    private static HashMap sortHashMapValues(HashMap map) {
-        List list = new LinkedList(map.entrySet());
-        //Custom Comparator
-        Collections.sort(list, new Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
-            }
-        });
-        //copying the sorted list in HashMap to preserve the iteration order
-        HashMap sortedHashMap = new LinkedHashMap();
-        for (Iterator it = list.iterator(); it.hasNext();)
-        {
-            Map.Entry entry = (Map.Entry) it.next();
-            sortedHashMap.put(entry.getKey(), entry.getValue());
-        }
-        return sortedHashMap;
-    }
-
-
     public void addTreasure(Treasure t){
         if (! treasures.contains(t)){
             treasures.add(t);
@@ -280,5 +361,14 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
 
     public void setAgentBelievedBackpack(String agentName, int backPack){
         this.agentBeliefs.get(agentName).put("BackPack", backPack);
+    }
+
+    public void setAgentType(String agentName, Observation type){
+        this.agentBeliefs.get(agentName).put("type", type);
+    }
+
+    public void setExplorationDone(boolean b){
+        explorationDone = b;
+
     }
 }
