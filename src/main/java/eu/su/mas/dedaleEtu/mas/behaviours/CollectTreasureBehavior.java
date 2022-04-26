@@ -4,6 +4,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.explo.BaseExplorerAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
@@ -22,7 +23,9 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
     private boolean finished = false;
     private String lastPosition = null;
     private int nbBlocked = 0;
-    private int blockedLimit = 3;
+    private int blockedLimit = 1;
+
+    private String nextPosition;
 
 
     public CollectTreasureBehavior(Agent myAgent){
@@ -31,6 +34,34 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
 
 
     public void action() {
+        ////////////   Blocked detection ////////////////////
+        //0) Retrieve the current position
+        String myPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
+        MapRepresentation myMap = ((BaseExplorerAgent)myAgent).getMap();
+        if (myPosition != null) {
+            // Test si l'agent est potentiellement bloqué
+            if (lastPosition != null && lastPosition.equals(myPosition))
+                nbBlocked++;
+            else {
+                nbBlocked = 0;
+            }
+            if (nbBlocked == blockedLimit) {
+                nbBlocked = 0;
+                if (myMap.getGraph().getNode(myPosition) != null) {
+                    int isLeader = 0;
+                    if (myMap.getGraph().getNode(myPosition).getDegree() == 1) {
+                        isLeader = 1;
+                    }
+                    System.out.println(myAgent.getLocalName() + " Send explo block " + myPosition + " ---> " + nextPosition + " ------> " + ((BaseExplorerAgent) myAgent).getCurrentDest());
+                    SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent) myAgent).getCurrentDest(), ((BaseExplorerAgent) myAgent).getCapacity());
+                    ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
+
+                }
+            }
+        }
+        //////////// END OF BLOCKED DETECTION //////////////
+
+
         //agent doesn't know where to go
         System.out.println(myAgent.getLocalName() + "j'exécute COLLECTE");
         if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
@@ -53,6 +84,10 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    // save next position and current position for unblocking purposes
+                    lastPosition = myPosition;
+                    nextPosition = nextNode;
+
                     ((AbstractDedaleAgent) this.myAgent).moveTo(nextNode);
                 }
             }
@@ -198,6 +233,6 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-        return ((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName);
+        return !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(behaviourName);
     }
 }

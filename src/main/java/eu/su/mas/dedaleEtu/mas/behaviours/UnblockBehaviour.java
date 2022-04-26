@@ -37,7 +37,6 @@ public class UnblockBehaviour extends SimpleBehaviour
         this.finalDestination = finalDestination;
         this.senderPosition = senderPosition;
         lastPosition = null;
-
         this.priority = priority;
         this.path = ((BaseExplorerAgent)myAgent).getMap().getShortestPath(senderPosition, finalDestination);
         this.path.add(lastPosition);
