@@ -14,7 +14,7 @@
     "agentType":"agentCollect",
     "agentName": "2ndAgent",
     "communicationRange": 3,
-    "initialLocation": "2",
+    "initialLocation": "15",
     "backPackCapacityGold": 1000,
     "backPackCapacityDiamond":2000,
     "detectionRadius": 0,

@@ -272,6 +272,8 @@ public class Principal {
 		}
 
 
+		int NB_AGENTS = 3;
+
 		/************************************************************************************************
 		 * The main container (now) exist, we deploy the agent(s) on  their local containers
 		 *They will have to find the gatekeeper's container to deploy themselves in the environment. 
@@ -352,22 +354,20 @@ public class Principal {
 		/*********
 		 * AGENT Explo2
 		 *********/
-		//		//1) Get the container where the agent will appear
-		//				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
-	//					Assert.assertNotNull("This container does not exist",c);
+//		//1) Get the container where the agent will appear
+//				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+//				Assert.assertNotNull("This container does not exist",c);
+//
+//				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
+//				agentName="Explo2";
+//
+//				//3) If you want to give specific parameters to your agent, add them here
+//				Object [] entityParametersExplo2={"My parameters"};
+//
+//				//4) Give the class name of your agent to let the system instantiate it
+//				ag=createNewDedaleAgent(c, agentName, ExploreCoopAgent.class.getName(), entityParametersExplo2);//ExploreSoloAgent
+//				agentList.add(ag);
 
-		//				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
-	//					agentName="Explo2";
-		//				
-		//				//3) If you want to give specific parameters to your agent, add them here
-	//					Object [] entityParametersExplo2={"My parameters"};
-		//				
-		//				//4) Give the class name of your agent to let the system instantiate it
-			//			ag=createNewDedaleAgent(c, agentName, ExploreCoopAgent.class.getName(), entityParametersExplo2);//ExploreSoloAgent
-	//					agentList.add(ag);
-		//		
-		//		
-		//		
 		/*********
 		 * AGENT Explo3
 		 *********/
@@ -389,7 +389,7 @@ public class Principal {
 		/*********
 		 * AGENT Explo4
 		 *********/
-		//1) Get the container where the agent will appear
+/*		//1) Get the container where the agent will appear
 				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
 				Assert.assertNotNull("This container does not exist",c);
 
@@ -407,7 +407,7 @@ public class Principal {
 		/*********
 //		 * AGENT Explo5
 		 *********/
-				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+/*				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
 				Assert.assertNotNull("This container does not exist",c);
 				agentName="2ndAgent";
 				Object [] entityParametersExplo5={"1stAgent","3rdAgent","4thAgent"};
@@ -426,6 +426,56 @@ public class Principal {
 				ag=createNewDedaleAgent(c, agentName, BaseExplorerAgent.class.getName(), entityParametersExplo7);//ExploreSoloAgent
 				agentList.add(ag);
 */
+				/*********
+				 * AGENT 1
+				 *********/
+				//1) Get the container where the agent will appear
+				if (NB_AGENTS > 0) {
+					c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+					Assert.assertNotNull("This container does not exist", c);
+
+					//		//2) Give the name of your agent, MUST be the same as the one given in the entities file.
+					agentName = "1stAgent";
+					//
+					//		//3) If you want to give specific parameters to your agent, add them here
+					Object[] entityParametersExplo4 = {"2ndAgent", "3rdAgent", "4thAgent"};
+					//
+					//		//4) Give the class name of your agent to let the system instantiate it
+					ag = createNewDedaleAgent(c, agentName, BaseExplorerAgent.class.getName(), entityParametersExplo4);//ExploreSoloAgent
+					//
+					agentList.add(ag);
+				}
+				/*********
+		//		 * AGENT 2
+				 *********/
+				if (NB_AGENTS > 1) {
+					c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+					Assert.assertNotNull("This container does not exist", c);
+					agentName = "2ndAgent";
+					Object[] entityParametersExplo5 = {"1stAgent", "3rdAgent", "4thAgent"};
+					ag = createNewDedaleAgent(c, agentName, BaseExplorerAgent.class.getName(), entityParametersExplo5);//ExploreSoloAgent
+					agentList.add(ag);
+				}
+
+				/*********
+				 * AGENT 3
+				 *********/
+				if (NB_AGENTS > 2) {
+					c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+					Assert.assertNotNull("This container does not exist", c);
+					agentName = "3rdAgent";
+					Object[] entityParametersExplo6 = {"1stAgent", "2ndAgent", "4thAgent"};
+					ag = createNewDedaleAgent(c, agentName, BaseExplorerAgent.class.getName(), entityParametersExplo6);//ExploreSoloAgent
+					agentList.add(ag);
+				}
+				if (NB_AGENTS > 3){
+					c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+					Assert.assertNotNull("This container does not exist", c);
+					agentName = "4thAgent";
+					Object[] entityParametersExplo7 = {"1stAgent", "2ndAgent", "3rdAgent"};
+					ag = createNewDedaleAgent(c, agentName, BaseExplorerAgent.class.getName(), entityParametersExplo7);//ExploreSoloAgent
+					agentList.add(ag);
+				}
 
 		/***********************************************************************
 		 * Type of agents used when you collect and gather treasures on the map
