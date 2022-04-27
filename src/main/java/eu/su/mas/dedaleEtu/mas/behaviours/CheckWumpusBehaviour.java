@@ -24,7 +24,7 @@ public class CheckWumpusBehaviour extends WakerBehaviour {
         List<String> blockedNodes = new ArrayList<String>();
         for (Iterator<Node> it = myMap.getGraph().nodes().iterator(); it.hasNext(); ) {
             Node n = it.next();
-            if (n.getAttribute("ui.class").toString().equals(MapRepresentation.MapAttribute.blocked.toString()){
+            if (n.getAttribute("ui.class").toString().equals(MapRepresentation.MapAttribute.blocked.toString())){
                 blockedNodes.add(n.getId());
             }
         }
