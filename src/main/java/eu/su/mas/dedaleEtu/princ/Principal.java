@@ -272,7 +272,7 @@ public class Principal {
 		}
 
 
-		int NB_AGENTS = 1;
+		int NB_AGENTS = 4;
 		boolean human = true; // set to true if you want to launch a human controlled agent, false if not
 
 		/************************************************************************************************

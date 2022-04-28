@@ -50,9 +50,8 @@ public class CheckWumpusBehaviour extends SimpleBehaviour {
             }
 
             if (blockedNodes.isEmpty() && currentNode == null) { // If there are no remaining nodes to check, end this behaviour.
-                System.out.println("No remaining nodes to check, check done! I'll comeback in 20 s tho");
+                System.out.println("No remaining nodes to check");
                 finished = true;
-
                 // IF THE CHECKING BEHAVIOUR HAS DISCOVERED NEW OPEN NODES, GO BACK AGAIN TO EXPLORATION
                 if (myMap.hasOpenNode()){
                     ((BaseExplorerAgent) this.myAgent).setPhase(0);
@@ -61,12 +60,9 @@ public class CheckWumpusBehaviour extends SimpleBehaviour {
                         ((BaseExplorerAgent)myAgent).setExplorationDone(false);
                         ((BaseExplorerAgent)myAgent).addBehaviourToBehaviourMap(ExploCoopBehaviour.behaviourName, (Behaviour) ((BaseExplorerAgent)myAgent).getBehaviour(ExploCoopBehaviour.behaviourName).get("behavior"));
                     }
-
                 } else {
                     ((BaseExplorerAgent) this.myAgent).setPhase(((BaseExplorerAgent) this.myAgent).getOldPhase());
                 }
-
-
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CheckWumpusWakerBehaviour.behaviourName,new CheckWumpusWakerBehaviour((AbstractDedaleAgent) myAgent,20000));
                 ((BaseExplorerAgent) myAgent).endBehaviour(behaviourName);
                 return;
@@ -120,7 +116,7 @@ public class CheckWumpusBehaviour extends SimpleBehaviour {
 
 
             try {
-                this.myAgent.doWait(500);
+                this.myAgent.doWait(200);
             } catch (Exception e) {
                 e.printStackTrace();
             }
