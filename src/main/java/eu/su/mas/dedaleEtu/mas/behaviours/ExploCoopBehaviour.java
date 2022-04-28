@@ -15,6 +15,7 @@ import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 
 import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.behaviours.SimpleBehaviour;
+import org.graphstream.graph.Node;
 
 import static java.time.Instant.now;
 
@@ -46,7 +47,9 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 		if (((BaseExplorerAgent) this.myAgent).getPhase()!=2) {
-			System.out.println(myAgent.getLocalName() + " j'exécute explo");
+
+			System.out.println(myAgent.getLocalName() + " EXPLORING !");
+			// initialize the agent's map if not already existing
 			if (this.myMap == null) {
 				((BaseExplorerAgent) this.myAgent).setMap(new MapRepresentation());
 				this.myMap = ((BaseExplorerAgent) this.myAgent).getMap();
@@ -55,8 +58,8 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			//0) Retrieve the current position
 			String myPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
 
-			if (myPosition != null) {
 
+			if (myPosition != null) {
 				// Test si l'agent est potentiellement bloqué
 				if (lastPosition != null && lastPosition.equals(myPosition))
 					nbBlocked++;
@@ -70,10 +73,20 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						int isLeader = 0;
 						if (this.myMap.getGraph().getNode(myPosition).getDegree() == 1) {
 							isLeader = 1;
+						 } else {
+							if (this.myMap.getGraph().getNode(myPosition).getDegree() == 2){
+								for (Iterator<Node> it = this.myMap.getGraph().getNode(myPosition).neighborNodes().iterator(); it.hasNext(); ) {
+									Node n = it.next();
+									if (!n.getId().equals(nextPosition)){
+										if (n.getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())){
+											isLeader = 1;
+										}
+									}
+								}
+							}
 						}
-						if (myMap.getGraph().getNode(nextPosition).getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())){
-							System.out.println("J'ESSSSSSSSSAAAAAAAYE DALLER AU WUMPUUUS");
-						}
+
+						nbBlocked = 0;
 						System.out.println(myAgent.getLocalName() + " Send explo block " + myPosition + " ---> "+ nextPosition + " ------> " + ((BaseExplorerAgent)myAgent).getCurrentDest());
 						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent)myAgent).getCurrentDest(), ((BaseExplorerAgent)myAgent).getCapacity());
 						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
@@ -109,10 +122,17 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 					}
 				}
 
+//				// if i'm currently on a node that is labelled "blocked", i change its label to "closed"
+//				if (myMap.getGraph().getNode(((BaseExplorerAgent)myAgent).getCurrentPosition()).getAttribute("ui.class").equals(MapAttribute.blocked.toString())){
+//					myMap.getGraph().getNode(((BaseExplorerAgent)myAgent).getCurrentPosition()).setAttribute("ui.class",MapAttribute.closed);
+//				}
+
 				//3) while openNodes is not empty, continues.
 				if (!this.myMap.hasOpenNode()) {
 					((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
 					System.out.println(this.myAgent.getLocalName() + " - Exploration successufully done, behaviour removed.");
+					System.out.println("Launching check blocked behaviour");
+					((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CheckWumpusWakerBehaviour.behaviourName,new CheckWumpusWakerBehaviour((AbstractDedaleAgent) this.myAgent,0));
 					((BaseExplorerAgent) this.myAgent).explorationDone();
 				} else {
 					//4) select next move.

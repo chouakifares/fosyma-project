@@ -8,6 +8,7 @@ import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
+import org.glassfish.pfl.basic.fsm.Guard;
 
 import java.sql.SQLOutput;
 import java.time.Instant;
@@ -139,6 +140,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
             ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
             ((BaseExplorerAgent) this.myAgent).setFull(true);
             //Agent's job is done
+            ((BaseExplorerAgent) this.myAgent).setPhase(4);
             ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap("randomWalk", new RandomWalkBehaviour((AbstractDedaleAgent) this.myAgent));
         }
     }

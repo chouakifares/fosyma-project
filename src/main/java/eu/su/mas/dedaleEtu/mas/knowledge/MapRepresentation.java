@@ -18,6 +18,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.IdAlreadyInUseException;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.graph.implementations.SingleNode;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.Viewer.CloseFramePolicy;
@@ -128,8 +129,9 @@ public class MapRepresentation implements Serializable {
 	}
 
 	/**
-	 * Compute the shortest Path from idFrom to IdTo. The computation is currently not very efficient
-	 * 
+	 * Compute the shortest Path from idFrom to IdTo.
+	 * It tries first to compute a path without any node labelled as "blocked" in it, if it exists.
+	 * Otherwise, it returns a path containing possibly blocked nodes.
 	 * 
 	 * @param idFrom id of the origin node
 	 * @param idTo id of the destination node
@@ -137,27 +139,61 @@ public class MapRepresentation implements Serializable {
 	 */
 	public synchronized List<String> getShortestPath(String idFrom,String idTo){
 		List<String> shortestPath=new ArrayList<String>();
-//		Graph filteredGraph = new SingleGraph("Graph without blocked nodes");
-//		List<Node> freeNodesList = new ArrayList<Node>();
-//		for (Iterator<Node> it = g.nodes().iterator(); it.hasNext(); ) {
-//			Node n = it.next();
-//			if ( ! n.getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())){
-//				freeNodesList.add(n);
-//			}
-//		}
-//		for (Node n: freeNodesList){
-//			Node newN;
-//			filteredGraph.addNode(n.getId());
-//			filteredGraph.getNode(n.getId()).clearAttributes();
-//			filteredGraph.
-//		}
+		Dijkstra dijkstra = new Dijkstra();
+		List<Node> path;
+		Iterator<Node> iter;
 
-		Dijkstra dijkstra = new Dijkstra();//number of edge
+		// If both the source and the target are not labelled as blocked nodes
+		if (!g.getNode(idTo).getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())
+			&& !g.getNode(idFrom).getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())
+		   )
+		{
+			// Create a filtered graph that is a copy of the graph but without 'blocked' nodes
+			Graph filteredGraph = new SingleGraph("Graph without blocked nodes");
+
+			// get a list of "free" nodes from the initial graph
+			List<Node> freeNodesList = new ArrayList<Node>();
+			for (Iterator<Node> it = g.nodes().iterator(); it.hasNext(); ) {
+				Node n = it.next();
+				if ( ! n.getAttribute("ui.class").toString().equals(MapAttribute.blocked.toString())){
+					freeNodesList.add(n);
+				}
+			}
+			// add the free nodes to the filtered graph
+			for (Node n: freeNodesList){
+				filteredGraph.addNode(n.getId());
+			}
+			// add the edges that are not part of a blocked node in the filtered graph.
+			for (Iterator<Edge> it = g.edges().iterator(); it.hasNext(); ) {
+				Edge e = it.next();
+				// If both the source and target of the edge are contained in the free nodes list, then add it to the filtered graph
+				if (freeNodesList.contains(e.getSourceNode()) && freeNodesList.contains(e.getTargetNode())){
+					filteredGraph.addEdge(e.getId(),e.getSourceNode().toString(), e.getTargetNode().toString());
+				}
+			}
+
+			// Try to find a path with using the filtered graph
+			dijkstra.init(filteredGraph);
+			dijkstra.setSource(filteredGraph.getNode(idFrom));
+			dijkstra.compute();//compute the distance to all nodes from idFrom
+			path=dijkstra.getPath(filteredGraph.getNode(idTo)).getNodePath(); //the shortest path from idFrom to idTo
+			iter=path.iterator();
+			while (iter.hasNext()){
+				shortestPath.add(iter.next().getId());
+			}
+			dijkstra.clear();
+			if (!shortestPath.isEmpty()) { //The path exists
+				shortestPath.remove(0);//remove the current position
+				return shortestPath;
+			}
+		}
+
+		// if a 'free path' doesn't exist, search for a path with the initial graph.
 		dijkstra.init(g);
 		dijkstra.setSource(g.getNode(idFrom));
 		dijkstra.compute();//compute the distance to all nodes from idFrom
-		List<Node> path=dijkstra.getPath(g.getNode(idTo)).getNodePath(); //the shortest path from idFrom to idTo
-		Iterator<Node> iter=path.iterator();
+		path=dijkstra.getPath(g.getNode(idTo)).getNodePath(); //the shortest path from idFrom to idTo
+		iter=path.iterator();
 		while (iter.hasNext()){
 			shortestPath.add(iter.next().getId());
 		}

@@ -44,6 +44,9 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
                     sgreceived = (SerializableSimpleGraph<String, MapRepresentation.MapAttribute>) ((HashMap) msgReceived.getContentObject()).get("map");
                     //updata map
                     currentMap.mergeMap(sgreceived);
+                    if (!currentMap.hasOpenNode()){
+                        ((BaseExplorerAgent)this.myAgent).setExplorationDone(true);
+                    }
                 }
                 if(((HashMap)msgReceived.getContentObject()).containsKey("treasure")) {
                      senderTreasures = (List<Treasure>) ((HashMap)msgReceived.getContentObject()).get("treasure");

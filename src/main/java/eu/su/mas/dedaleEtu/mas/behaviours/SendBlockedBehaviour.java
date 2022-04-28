@@ -76,6 +76,7 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
                 }
             }
         }
+        // if this position is stenchy
         if (stenchy) {
                 if (((BaseExplorerAgent) myAgent).getBehaviourStatus(ConfirmWumpusBehaviour.behaviourName + nextPosition) == null || !((BaseExplorerAgent) myAgent).getBehaviourStatus(ConfirmWumpusBehaviour.behaviourName + nextPosition)) {
                     // Add a Behaviour that will consider the node 'nextPosition' as a blocked node after a certain time (timeout)
