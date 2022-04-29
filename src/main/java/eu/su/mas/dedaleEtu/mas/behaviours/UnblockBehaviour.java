@@ -93,8 +93,6 @@ public class UnblockBehaviour extends SimpleBehaviour
                     }
                 }
 
-
-
                 // Compute the path to the final destination
                 System.out.println(myAgent.getLocalName() + " at " + myPosition + " final dest : " + finalDestination);
                 List<String> next = ((BaseExplorerAgent) myAgent).getMap().getShortestPath(myPosition, finalDestination);

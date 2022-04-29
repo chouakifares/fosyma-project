@@ -226,7 +226,9 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     }
     // sets a bahvior states to  false in order to use it in the done methode of that behaviour
     public void endBehaviour(String toDelete) {
+        if (this.Behaviourmap.get(toDelete) != null) {
             this.Behaviourmap.get(toDelete).put("active", false);
+        }
     }
     // add behaviour to the map of behaviours used in exploration , if the behaviour already exists it sets it to active again
     public void addBehaviourToBehaviourMap(String toAdd, Behaviour bToAdd){
