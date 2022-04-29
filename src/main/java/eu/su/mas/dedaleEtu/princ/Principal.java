@@ -273,7 +273,7 @@ public class Principal {
 
 
 		int NB_AGENTS = 4;
-		boolean human = true; // set to true if you want to launch a human controlled agent, false if not
+		boolean human = false; // set to true if you want to launch a human controlled agent, false if not
 
 		/************************************************************************************************
 		 * The main container (now) exist, we deploy the agent(s) on  their local containers

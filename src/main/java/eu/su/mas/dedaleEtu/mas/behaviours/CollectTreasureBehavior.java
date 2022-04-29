@@ -63,8 +63,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
 
 
         //agent doesn't know where to go
-        System.out.println(myAgent.getLocalName() + "j'exécute COLLECTE");
-        if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
+            if(((BaseExplorerAgent)this.myAgent).getCurrentDest()==null) {
             Couple<String, Integer> closestTreasure = findClosestPackableTreasure();
             if(closestTreasure!=null)
                 ((BaseExplorerAgent) this.myAgent).setCurrentDest(closestTreasure.getLeft());
@@ -98,11 +97,13 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                 for (Couple<Observation, Integer> o : lobs.get(0).getRight()) {
                     switch (o.getLeft()) {
                         case DIAMOND:
+                            ((BaseExplorerAgent) this.myAgent).openLock(o.getLeft());
                             treasureType = Observation.DIAMOND;
                             if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.DIAMOND);
                             break;
                         case GOLD:
+                            ((BaseExplorerAgent) this.myAgent).openLock(o.getLeft());
                             treasureType = Observation.GOLD;
                             if (((BaseExplorerAgent) this.myAgent).getMyType() == Observation.ANY_TREASURE)
                                 ((BaseExplorerAgent) this.myAgent).setMyType(Observation.GOLD);
@@ -120,12 +121,18 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
             lobs = ((AbstractDedaleAgent) this.myAgent).observe();
             //update the agent's treasure list
             if(lobs.get(0).getRight().size()!=0)
-                ((BaseExplorerAgent) this.myAgent).updateTreasure(
-                        ((BaseExplorerAgent) this.myAgent).getCurrentPosition(),
-                        (Observation) ((Couple) lobs.get(0).getRight().get(0)).getLeft(),
-                        (Integer) ((Couple) lobs.get(0).getRight().get(0)).getRight(),
-                        Instant.now().toEpochMilli()
-                );
+                for(Couple <Observation, Integer> o : lobs.get(0).getRight()) {
+                    switch (o.getLeft()) {
+                        case DIAMOND:
+                        case GOLD:
+                            ((BaseExplorerAgent) this.myAgent).updateTreasure(
+                                    ((BaseExplorerAgent) this.myAgent).getCurrentPosition(),
+                                    o.getLeft(),
+                                    o.getRight(),
+                                    Instant.now().toEpochMilli()
+                            );
+                    }
+                }
             else
                 ((BaseExplorerAgent) this.myAgent).updateTreasure(
                         ((BaseExplorerAgent) this.myAgent).getCurrentPosition(),
