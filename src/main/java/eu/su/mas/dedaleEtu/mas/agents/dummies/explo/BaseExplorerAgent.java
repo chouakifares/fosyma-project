@@ -57,7 +57,8 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
     //list of the treasures that the agents discovered (via exploration or communication)
     private List<Treasure> treasures = new ArrayList<Treasure>();
 
-    private HashMap mapsToSend = new HashMap();
+    private HashMap mapSent = new HashMap();
+    private HashMap mapReceived = new HashMap();
 
 
     //////////////////////////////////////////////////////// METHODS //////////////////////////////////////////////////////
@@ -228,7 +229,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         addBehaviour(new startMyBehaviours(this, lb));
         System.out.println("the  agent " + this.getLocalName() + " is started");
         for (String agentName: list_agentNames){
-            mapsToSend.put(agentName, null);
+            mapSent.put(agentName, null);
+        }
+        for (String agentName: list_agentNames){
+            mapReceived.put(agentName, null);
         }
     }
 
@@ -393,12 +397,19 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         explorationDone = b;
     }
 
-    public Graph getMapToSend (String agentName){
-        return (Graph) mapsToSend.get(agentName);
+    public SerializableSimpleGraph getMapSent (String agentName){
+        return (SerializableSimpleGraph) mapSent.get(agentName);
     }
 
-    public void setMapToSend(String agentName, Graph mr){
-        mapsToSend.put(agentName, mr);
+    public void setMapSent(String agentName, SerializableSimpleGraph sg){
+        mapSent.put(agentName, sg);
+    }
+    public SerializableSimpleGraph getMapReceived (String agentName){
+        return (SerializableSimpleGraph) mapReceived.get(agentName);
+    }
+
+    public void setMapReceived(String agentName, SerializableSimpleGraph sg){
+        mapReceived.put(agentName, sg);
     }
 
 }

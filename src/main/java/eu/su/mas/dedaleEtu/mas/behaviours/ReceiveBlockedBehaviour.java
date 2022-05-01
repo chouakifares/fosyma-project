@@ -127,7 +127,6 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
                             myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
 
                     }
-                    System.out.println(myCapacity + " ? " + capacity);
                     if (myCapacity < capacity) {
                         SimpleBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
                         ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);
