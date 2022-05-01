@@ -9,13 +9,11 @@ import eu.su.mas.dedaleEtu.mas.knowledge.Treasure;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 import org.glassfish.pfl.basic.fsm.Guard;
+import org.graphstream.graph.Node;
 
 import java.sql.SQLOutput;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CollectTreasureBehavior extends SimpleBehaviour {
@@ -52,8 +50,20 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     int isLeader = 0;
                     if (myMap.getGraph().getNode(myPosition).getDegree() == 1) {
                         isLeader = 1;
+                    } else {
+                        if (myMap.getGraph().getNode(myPosition).getDegree() == 2){
+                            for (Iterator<Node> it = myMap.getGraph().getNode(myPosition).neighborNodes().iterator(); it.hasNext(); ) {
+                                Node n = it.next();
+                                if (!n.getId().equals(nextPosition)){
+                                    if (n.getAttribute("ui.class").toString().equals(MapRepresentation.MapAttribute.blocked.toString())){
+                                        isLeader = 1;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    System.out.println(myAgent.getLocalName() + " Send explo block " + myPosition + " ---> " + nextPosition + " ------> " + ((BaseExplorerAgent) myAgent).getCurrentDest());
+                    nbBlocked = 0;
+                    System.out.println(myAgent.getLocalName() + " Send collect block " + myPosition + " ---> " + nextPosition + " ------> " + ((BaseExplorerAgent) myAgent).getCurrentDest());
                     SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent) myAgent).getCurrentDest(), ((BaseExplorerAgent) myAgent).getCapacity());
                     ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
 

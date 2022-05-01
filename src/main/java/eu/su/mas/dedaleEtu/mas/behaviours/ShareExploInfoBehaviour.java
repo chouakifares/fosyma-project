@@ -30,7 +30,12 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
         msg.setProtocol(protocol);
         msg.setSender(this.myAgent.getAID());
         msg.addReceiver(new AID(receiver,AID.ISLOCALNAME));
+        // TODO: send the map that is destined for the agent receiver.
+
+
         SerializableSimpleGraph<String, MapRepresentation.MapAttribute> sg=((BaseExplorerAgent)this.myAgent).getMap().getSerializableGraph();
+
+
         HashMap temp = new HashMap();
         temp.put("map", sg);
         temp.put("treasure", ((BaseExplorerAgent) this.myAgent).getTreasures());

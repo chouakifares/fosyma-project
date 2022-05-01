@@ -222,6 +222,50 @@ public class MapRepresentation implements Serializable {
 		return null;
 	}
 
+
+	public static SerializableSimpleGraph<String, MapAttribute> getGraphDifference(SerializableSimpleGraph<String, MapAttribute> currentMap, SerializableSimpleGraph<String, MapAttribute> sentMap){
+		//The resultant graph which is the difference between the two graphs
+		SerializableSimpleGraph <String, MapAttribute> new_g = new SerializableSimpleGraph <String, MapAttribute>();
+
+		List<String> nodesCurrent = new ArrayList<String>(); // The nodes in the up-to-date Map
+		List<String> nodesSent = new ArrayList<String>(); // The nodes of the believed last knowledge of the target agent
+		List<String> diffNodes = new ArrayList<String>(); // The nodes of the believed last knowledge of the target agent
+
+
+		for (SerializableNode<String, MapAttribute> n: currentMap.getAllNodes()){
+			nodesCurrent.add(n.getNodeId());
+		}
+		for (SerializableNode<String, MapAttribute> n: sentMap.getAllNodes()){
+			nodesSent.add(n.getNodeId());
+		}
+
+		// get the difference between the two nodes lists (currentMap is the latest)
+		for (String currentNode: nodesCurrent){
+			if (!nodesSent.contains(currentNode)) {  // if the node is worth to be sent
+				diffNodes.add(currentNode);
+			}
+		}
+
+		// Add the new nodes to the new graph.
+		for (String n: diffNodes){
+			new_g.addNode(n, currentMap.getNode(n).getNodeContent());
+		}
+		// Add the edges
+		for (String n: diffNodes){
+			for (String n2: currentMap.getEdges(n))
+				new_g.addEdge(n+n2, n, n2);
+		}
+
+		return new_g;
+	}
+
+
+	public static SerializableSimpleGraph <String, MapAttribute> getGraphUnion(SerializableSimpleGraph <String, MapAttribute> g1,SerializableSimpleGraph <String, MapAttribute> g2){
+		SerializableSimpleGraph <String, MapAttribute> new_g = new SerializableSimpleGraph <String, MapAttribute>();
+
+		return new_g;
+	}
+
 	public Couple<String , Integer> getClosestOpenNode(String myPosition) {
 		//1) Get all openNodes
 		List<String> opennodes=getOpenNodes();
