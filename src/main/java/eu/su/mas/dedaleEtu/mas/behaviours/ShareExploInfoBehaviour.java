@@ -36,8 +36,8 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
         SerializableSimpleGraph lastReceived =  ((BaseExplorerAgent)myAgent).getMapReceived(receiver);
         SerializableSimpleGraph lastSent = ((BaseExplorerAgent)myAgent).getMapSent(receiver);
         if (lastReceived != null && lastSent != null){
-//            SerializableSimpleGraph receiverCurrentMap = MapRepresentation.getGraphUnion(lastSent,lastReceived);
-              toSend = MapRepresentation.getGraphDifference(myCurrentMap, lastSent);
+            SerializableSimpleGraph receiverCurrentMap = MapRepresentation.getGraphUnion(lastSent,lastReceived);
+              toSend = MapRepresentation.getGraphDifference(myCurrentMap, receiverCurrentMap);
         } else {
             toSend = myCurrentMap;
         }

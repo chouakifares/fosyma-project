@@ -267,7 +267,7 @@ public class MapRepresentation implements Serializable {
 		}
 
 		for (SerializableNode<String,MapAttribute> n: nodesUnited){
-			new_g.addNode((String) n.getNodeId(), MapAttribute.valueOf(((MapAttribute)n.getNodeContent()).toString()));
+			new_g.addNode( n.getNodeId(), MapAttribute.valueOf((n.getNodeContent()).toString()));
 		}
 
 		for (SerializableNode<String,MapAttribute> n: nodesUnited){
