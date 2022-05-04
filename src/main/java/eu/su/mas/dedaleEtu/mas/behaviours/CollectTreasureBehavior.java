@@ -145,9 +145,12 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
         // agent can't pick up anymore treasures
         else{
             ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
+            ((BaseExplorerAgent) this.myAgent).endBehaviour(SendHelloBehaviour.behaviourName);
+
             ((BaseExplorerAgent) this.myAgent).setFull(true);
             //Agent's job is done
             ((BaseExplorerAgent) this.myAgent).setPhase(4);
+
             ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap("randomWalk", new RandomWalkBehaviour((AbstractDedaleAgent) this.myAgent));
         }
     }
@@ -170,7 +173,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
         Double min = Double.POSITIVE_INFINITY;
         for(Treasure i : ((BaseExplorerAgent) this.myAgent).getTreasures()){
             //TO REFACTOR
-            if(myType == Observation.ANY_TREASURE ) {
+            if(myType == Observation.ANY_TREASURE || ((BaseExplorerAgent) this.myAgent).getProp() == 0) {
                 if(i.getQuantity() < mySpace) {
                     if (i.getQuantity() == max)
                         packableTreasures.add(i.getPosition());

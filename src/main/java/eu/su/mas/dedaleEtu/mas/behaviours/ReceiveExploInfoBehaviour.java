@@ -112,8 +112,6 @@ public class ReceiveExploInfoBehaviour extends SimpleBehaviour {
                         new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1500)
                 );
                 ((BaseExplorerAgent) this.myAgent).setBusy(false);
-                System.out.println(this.myAgent.getLocalName() + ((BaseExplorerAgent) this.myAgent).Behaviourmap);
-                System.out.println("ReceiveInfo:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
                 ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
             }
             else{

@@ -30,6 +30,24 @@ public class SendACKBehaviour extends OneShotBehaviour {
                     new ReceiveACKBehaviour((AbstractDedaleAgent) this.myAgent)
             );
         }
+        if(((BaseExplorerAgent)this.myAgent).getPhase()==0){
+            if(((BaseExplorerAgent)this.myAgent).getBehaviour(RestoreExploBehaviour.behaviourName)== null ||
+                    !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(RestoreExploBehaviour.behaviourName)) {
+                ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                        RestoreExploBehaviour.behaviourName,
+                        new RestoreExploBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
+                );
+            }
+        }else if(((BaseExplorerAgent)this.myAgent).getPhase()==1){
+            if(((BaseExplorerAgent)this.myAgent).getBehaviour(RestoreCollectBehaviour.behaviourName)== null ||
+                    !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(RestoreCollectBehaviour.behaviourName)) {
+                ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                        RestoreCollectBehaviour.behaviourName,
+                        new RestoreCollectBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
+                );
+            }
+        }
+
         msg.setSender(this.myAgent.getAID());
         msg.setProtocol(protocol);
         msg.addReceiver(new AID(this.receiver,AID.ISLOCALNAME));

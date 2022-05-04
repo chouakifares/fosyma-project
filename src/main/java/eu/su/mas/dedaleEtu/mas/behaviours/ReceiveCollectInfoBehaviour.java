@@ -45,7 +45,7 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                 e.printStackTrace();
             }
             String senderPos = (String) sg.get("position");
-            String senderName = (String) msgReceived.getSender().getLocalName();
+            String senderName = msgReceived.getSender().getLocalName();
             String senderDest = (String) sg.get("dest");
             float senderProp = (float)sg.get("prop");
             Observation senderType = (Observation) sg.get("type");
@@ -107,6 +107,7 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                     // update the knowldge of each agent about the other (backpack wise)
                     ((BaseExplorerAgent) this.myAgent).setAgentBelievedBackpack(msgReceived.getSender().getLocalName(), (int)sg.get("BackPack"));
                     if(senderType == ((BaseExplorerAgent) this.myAgent).getMyType()){
+                        ((BaseExplorerAgent) this.myAgent).increaseSameTypeAgentBackPacks((int)sg.get("BackPack"));
                         //if they're both headed for the same destination then
                         if(((BaseExplorerAgent) this.myAgent).getCurrentDest() == senderDest){
                             float myProp;
@@ -122,7 +123,6 @@ public class ReceiveCollectInfoBehaviour extends SimpleBehaviour {
                     }
                 }
             }
-            System.out.println( this.myAgent.getLocalName() + " done");
             ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
             ((BaseExplorerAgent) this.myAgent).endBehaviour(RestoreSendHelloBehaviour.behaviourName);
             ((BaseExplorerAgent) this.myAgent).endBehaviour(SendHelloBehaviour.behaviourName);

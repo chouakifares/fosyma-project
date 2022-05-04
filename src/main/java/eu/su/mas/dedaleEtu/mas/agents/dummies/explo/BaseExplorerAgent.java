@@ -95,6 +95,10 @@ public class BaseExplorerAgent extends AbstractDedaleAgent {
         return old_phase;
     }
 
+    ///PHASE used to figure out what is the agent doing
+    //0: exploration
+    //1: collect
+    //2: unblocking
     private int phase = 0;
 
     public Observation getMyType() {

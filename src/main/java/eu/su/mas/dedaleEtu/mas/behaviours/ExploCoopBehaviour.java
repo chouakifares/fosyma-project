@@ -48,7 +48,6 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 	public void action() {
 		if (((BaseExplorerAgent) this.myAgent).getPhase()!=2) {
 
-			System.out.println(myAgent.getLocalName() + " EXPLORING !");
 			// initialize the agent's map if not already existing
 			if (this.myMap == null) {
 				((BaseExplorerAgent) this.myAgent).setMap(new MapRepresentation());
