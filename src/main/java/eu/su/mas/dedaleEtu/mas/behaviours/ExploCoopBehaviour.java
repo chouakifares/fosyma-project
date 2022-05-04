@@ -87,9 +87,13 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						}
 
 						nbBlocked = 0;
-						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent)myAgent).getCurrentDest(), ((BaseExplorerAgent)myAgent).getCapacity());
+						SimpleBehaviour blockedBehaviour;
+						if (((BaseExplorerAgent)myAgent).getCurrentDest() != null) {
+							blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent) myAgent).getCurrentDest(), ((BaseExplorerAgent) myAgent).getCapacity());
+						} else {
+							blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, nextPosition, ((BaseExplorerAgent) myAgent).getCapacity());
+						}
 						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
-
 					}
 				}
 
