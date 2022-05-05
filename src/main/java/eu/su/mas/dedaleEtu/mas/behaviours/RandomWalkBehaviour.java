@@ -37,13 +37,11 @@ public class RandomWalkBehaviour extends TickerBehaviour{
 		if (((BaseExplorerAgent) myAgent).getPhase()==4) {
 			//Example to retrieve the current position
 			String myPosition = ((AbstractDedaleAgent) this.myAgent).getCurrentPosition();
-			System.out.println(this.myAgent.getLocalName() + " -- myCurrentPosition is: " + myPosition);
 			if (myPosition != null) {
 				//List of observable from the agent's current position
 				List<Couple<String, List<Couple<Observation, Integer>>>> lobs = ((AbstractDedaleAgent) this.myAgent).observe();//myPosition
-				System.out.println(this.myAgent.getLocalName() + " -- list of observables: " + lobs);
 				try {
-					this.myAgent.doWait(200);
+					this.myAgent.doWait(1000);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

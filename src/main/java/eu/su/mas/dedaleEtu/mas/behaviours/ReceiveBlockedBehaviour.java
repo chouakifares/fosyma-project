@@ -127,7 +127,6 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
                             myCapacity = ((BaseExplorerAgent) myAgent).getBackPackFreeSpace().get(0).getRight();
 
                     }
-                    System.out.println(myCapacity + " ? " + capacity);
                     if (myCapacity < capacity) {
                         SimpleBehaviour u = new UnblockBehaviour((AbstractDedaleAgent) this.myAgent, isLeader, senderPosition, nextPosition, finalDestination, msgReceived.getSender().getLocalName());
                         ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);
@@ -140,9 +139,10 @@ public class ReceiveBlockedBehaviour extends SimpleBehaviour {
                             ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(UnblockBehaviour.behaviourName, u);
                             ((BaseExplorerAgent) myAgent).setPhase(2);
                             System.out.println(myAgent.getLocalName() + " starts a name unblocking behaviour for " + msgReceived.getSender().getLocalName());
+                        }else{
+                            ((BaseExplorerAgent)this.myAgent).setPhase(((BaseExplorerAgent) this.myAgent).getOldPhase());
                         }
                     }
-
                 }
             }
         }

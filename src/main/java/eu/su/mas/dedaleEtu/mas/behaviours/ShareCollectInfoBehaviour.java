@@ -53,6 +53,7 @@ public class ShareCollectInfoBehaviour extends OneShotBehaviour {
         );
         ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
         System.out.println("ShareCollect:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());
+        System.out.println("Next Position:"+((BaseExplorerAgent)this.myAgent).getCurrentDest());
         ((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
     }
 

@@ -61,7 +61,7 @@ public class CheckWumpusBehaviour extends SimpleBehaviour {
                         ((BaseExplorerAgent)myAgent).addBehaviourToBehaviourMap(ExploCoopBehaviour.behaviourName, (Behaviour) ((BaseExplorerAgent)myAgent).getBehaviour(ExploCoopBehaviour.behaviourName).get("behavior"));
                     }
                 } else {
-                    ((BaseExplorerAgent) this.myAgent).setPhase(((BaseExplorerAgent) this.myAgent).getOldPhase());
+                    ((BaseExplorerAgent) this.myAgent).setPhase(1);
                 }
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CheckWumpusWakerBehaviour.behaviourName,new CheckWumpusWakerBehaviour((AbstractDedaleAgent) myAgent,20000));
                 ((BaseExplorerAgent) myAgent).endBehaviour(behaviourName);

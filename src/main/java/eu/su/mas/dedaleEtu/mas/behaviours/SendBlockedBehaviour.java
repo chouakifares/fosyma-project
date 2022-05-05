@@ -39,7 +39,6 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
-//        System.out.println(" i am " + myAgent.getLocalName() + " trying to send a message");
         ACLMessage msg=new ACLMessage(ACLMessage.INFORM);
         msg.setSender(this.myAgent.getAID());
         msg.setProtocol(protocol);
@@ -84,6 +83,14 @@ public class SendBlockedBehaviour extends OneShotBehaviour {
                     ((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(ConfirmWumpusBehaviour.behaviourName + nextPosition, cwb);
                 }
         }
+
+
+/*        if (((BaseExplorerAgent) myAgent).getBehaviourStatus(SendHelloBehaviour.behaviourName)){
+            ((BaseExplorerAgent) myAgent).endBehaviour(SendHelloBehaviour.behaviourName);
+        }
+        if (((BaseExplorerAgent) myAgent).getBehaviourStatus(ShareCollectInfoBehaviour.behaviourName)){
+            ((BaseExplorerAgent) myAgent).endBehaviour(ShareCollectInfoBehaviour.behaviourName);
+        }*/
 
 
 

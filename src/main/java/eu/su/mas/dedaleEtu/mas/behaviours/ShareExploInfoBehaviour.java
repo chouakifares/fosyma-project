@@ -30,9 +30,19 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
         msg.setProtocol(protocol);
         msg.setSender(this.myAgent.getAID());
         msg.addReceiver(new AID(receiver,AID.ISLOCALNAME));
-        SerializableSimpleGraph<String, MapRepresentation.MapAttribute> sg=((BaseExplorerAgent)this.myAgent).getMap().getSerializableGraph();
+        // TODO: send the map that is destined for the agent receiver.
+        SerializableSimpleGraph<String, MapRepresentation.MapAttribute> toSend;
+        SerializableSimpleGraph<String, MapRepresentation.MapAttribute> myCurrentMap = ((BaseExplorerAgent) this.myAgent).getMap().getSerializableGraph();
+        SerializableSimpleGraph lastReceived =  ((BaseExplorerAgent)myAgent).getMapReceived(receiver);
+        SerializableSimpleGraph lastSent = ((BaseExplorerAgent)myAgent).getMapSent(receiver);
+        if (lastReceived != null && lastSent != null){
+            SerializableSimpleGraph receiverCurrentMap = MapRepresentation.getGraphUnion(lastSent,lastReceived);
+              toSend = MapRepresentation.getGraphDifference(myCurrentMap, receiverCurrentMap);
+        } else {
+            toSend = myCurrentMap;
+        }
         HashMap temp = new HashMap();
-        temp.put("map", sg);
+        temp.put("map", toSend);
         temp.put("treasure", ((BaseExplorerAgent) this.myAgent).getTreasures());
         temp.put("position", ((BaseExplorerAgent) this.myAgent).getCurrentPosition());
         if(((BaseExplorerAgent) this.myAgent).getAgentBelievedBackpack(receiver)==-1){
@@ -43,6 +53,9 @@ public class ShareExploInfoBehaviour extends OneShotBehaviour {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Update the sent map
+        ((BaseExplorerAgent)myAgent).setMapSent(receiver, toSend);
 
         ((BaseExplorerAgent) this.myAgent).endBehaviour(behaviourName);
         System.out.println("ShareTopo:"+this.myAgent.getLocalName()+":"+((BaseExplorerAgent) this.myAgent).getCurrentPosition());

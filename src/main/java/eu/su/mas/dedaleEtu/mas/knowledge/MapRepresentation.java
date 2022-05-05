@@ -1,12 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.knowledge;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
@@ -221,6 +216,76 @@ public class MapRepresentation implements Serializable {
 			return sortedOpen.get(1);
 		return null;
 	}
+
+
+	public static SerializableSimpleGraph<String, MapAttribute> getGraphDifference(SerializableSimpleGraph<String, MapAttribute> currentMap, SerializableSimpleGraph<String, MapAttribute> sentMap)  {
+		//The resultant graph which is the difference between the two graphs
+		SerializableSimpleGraph <String, MapAttribute> new_g = new SerializableSimpleGraph <String, MapAttribute>();
+
+		Set<SerializableNode<String, MapAttribute>> diffNodes = new HashSet<SerializableNode<String, MapAttribute>>();
+
+
+		// get the difference between the two nodes lists (currentMap is the latest)
+		for (SerializableNode <String, MapAttribute> currentNode: currentMap.getAllNodes()){
+			if (!sentMap.getAllNodes().contains(currentNode)) {  // if the node is worth to be sent
+				diffNodes.add(currentNode);
+			}
+		}
+
+		// Add the edges
+		for (SerializableNode <String, MapAttribute> n: diffNodes){
+			for (Iterator<String> it = currentMap.getEdges(n.getNodeId()).iterator(); it.hasNext(); ) {
+				String se = it.next();
+				for (Iterator<SerializableNode<String, MapAttribute>> iter = currentMap.getAllNodes().iterator(); iter.hasNext(); ) {
+					SerializableNode<String,MapAttribute> tmp = iter.next();
+					if (tmp.getNodeId().equals(se)){
+						new_g.addNode(n.getNodeId(),n.getNodeContent());
+						new_g.addNode(tmp.getNodeId(), tmp.getNodeContent());
+						new_g.addEdge("",n.getNodeId(), tmp.getNodeId());
+					}
+				}
+			}
+		}
+
+		return new_g;
+	}
+
+
+	public static SerializableSimpleGraph <String, MapAttribute> getGraphUnion(SerializableSimpleGraph <String, MapAttribute> lastSent, SerializableSimpleGraph <String, MapAttribute> lastReceived){
+		//The resultant graph which is the union between the two graphs
+		SerializableSimpleGraph <String, MapAttribute> new_g = new SerializableSimpleGraph <String, MapAttribute>();
+
+
+		// The nodes of the believed last knowledge of the target agent
+		List<SerializableNode<String, MapAttribute>> nodesUnited = new ArrayList<>(lastSent.getAllNodes());
+
+		for (SerializableNode<String, MapAttribute> n: lastReceived.getAllNodes()){
+			if (!nodesUnited.contains(n)){
+				nodesUnited.add(n);
+			}
+		}
+
+		for (SerializableNode<String,MapAttribute> n: nodesUnited){
+			new_g.addNode( n.getNodeId(), MapAttribute.valueOf((n.getNodeContent()).toString()));
+		}
+
+		for (SerializableNode<String,MapAttribute> n: nodesUnited){
+			if (lastSent.getAllNodes().contains(n)) {
+				for (String n2 : lastSent.getEdges(n.getNodeId()))
+					new_g.addEdge(n.getNodeId() + n2, n.getNodeId(), n2);
+			}
+			if (lastReceived.getAllNodes().contains(n)) {
+				for (String n2 : lastReceived.getEdges(n.getNodeId()))
+					new_g.addEdge(n.getNodeId() + n2, n.getNodeId(), n2);
+			}
+		}
+
+		return new_g;
+	}
+
+
+
+
 
 	public Couple<String , Integer> getClosestOpenNode(String myPosition) {
 		//1) Get all openNodes

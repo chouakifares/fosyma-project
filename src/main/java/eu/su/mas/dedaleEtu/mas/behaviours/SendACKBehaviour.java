@@ -30,6 +30,13 @@ public class SendACKBehaviour extends OneShotBehaviour {
                     new ReceiveACKBehaviour((AbstractDedaleAgent) this.myAgent)
             );
         }
+        if(((BaseExplorerAgent)this.myAgent).getBehaviour(RestoreSendHelloBehaviour.behaviourName)== null ||
+                !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(RestoreSendHelloBehaviour.behaviourName)) {
+            ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(
+                    RestoreSendHelloBehaviour.behaviourName,
+                    new RestoreSendHelloBehaviour((AbstractDedaleAgent) this.myAgent, 1000)
+            );
+        }
         if(((BaseExplorerAgent)this.myAgent).getPhase()==0){
             if(((BaseExplorerAgent)this.myAgent).getBehaviour(RestoreExploBehaviour.behaviourName)== null ||
                     !((BaseExplorerAgent)this.myAgent).getBehaviourStatus(RestoreExploBehaviour.behaviourName)) {

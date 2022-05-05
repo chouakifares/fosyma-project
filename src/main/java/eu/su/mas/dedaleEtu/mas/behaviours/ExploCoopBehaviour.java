@@ -28,7 +28,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 	 * Current knowledge of the agent regarding the environment
 	 */
 	private MapRepresentation myMap;
-	private int blockedLimit = 1;
+	private int blockedLimit = 3;
 	private int nbBlocked = 0;
 	private String lastPosition = null;
 	private List<String> list_agentNames;
@@ -86,7 +86,6 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 						}
 
 						nbBlocked = 0;
-						System.out.println(myAgent.getLocalName() + " Send explo block " + myPosition + " ---> "+ nextPosition + " ------> " + ((BaseExplorerAgent)myAgent).getCurrentDest());
 						SimpleBehaviour blockedBehaviour = new SendBlockedBehaviour(this.myAgent, isLeader, myPosition, nextPosition, ((BaseExplorerAgent)myAgent).getCurrentDest(), ((BaseExplorerAgent)myAgent).getCapacity());
 						((BaseExplorerAgent) myAgent).addBehaviourToBehaviourMap(SendBlockedBehaviour.behaviourName, blockedBehaviour);
 
