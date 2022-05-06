@@ -90,7 +90,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     String currentPos = ((BaseExplorerAgent) this.myAgent).getCurrentPosition();
                     if(currentPos != ((BaseExplorerAgent) this.myAgent).getCurrentDest()) {
                         try {
-                            this.myAgent.doWait(1000);
+                            this.myAgent.doWait(200);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -63,7 +63,7 @@ public class CheckWumpusBehaviour extends SimpleBehaviour {
                 } else {
                     ((BaseExplorerAgent) this.myAgent).setPhase(1);
                 }
-                ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CheckWumpusWakerBehaviour.behaviourName,new CheckWumpusWakerBehaviour((AbstractDedaleAgent) myAgent,20000));
+                ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap(CheckWumpusWakerBehaviour.behaviourName,new CheckWumpusWakerBehaviour((AbstractDedaleAgent) myAgent,30000));
                 ((BaseExplorerAgent) myAgent).endBehaviour(behaviourName);
                 return;
             }

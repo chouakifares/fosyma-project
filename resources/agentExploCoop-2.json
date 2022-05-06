@@ -53,5 +53,27 @@
   "detectionRadius": 1,
   "strengthExpertise": 1,
   "lockPickingExpertise":1
+  },
+  {
+    "agentType":"wumpus",
+    "agentName": "Golem1",
+    "communicationRange": 0,
+    "initialLocation": "free",
+    "backPackCapacityGold": -1,
+    "backPackCapacityDiamond":-1,
+    "detectionRadius": 1,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  {
+    "agentType":"wumpus",
+    "agentName": "Golem2",
+    "communicationRange": 0,
+    "initialLocation": "free",
+    "backPackCapacityGold": -1,
+    "backPackCapacityDiamond":-1,
+    "detectionRadius": 1,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
   }
 ]
