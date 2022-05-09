@@ -51,7 +51,7 @@ public class UnblockBehaviour extends SimpleBehaviour
             // 2) Test if the agent is blocked
             if(lastPosition != null){
                 if (myPosition.equals(lastPosition)) {
-                    if (compatibleNodesToTry.isEmpty()) { // TODO: priority shouldn't be always 1
+                    if (compatibleNodesToTry.isEmpty()) {
                         System.out.println(myAgent.getLocalName() + " blocked at " + myPosition + " I send block to " + lastTry);
                         SendBlockedBehaviour sb = new SendBlockedBehaviour(myAgent, 1, myPosition, lastTry, lastTry, ((((BaseExplorerAgent) myAgent).getCapacity())));
                         ReceiveBlockedBehaviour rb = new ReceiveBlockedBehaviour(myAgent);
@@ -94,7 +94,7 @@ public class UnblockBehaviour extends SimpleBehaviour
                 }
 
                 // Compute the path to the final destination
-                System.out.println(myAgent.getLocalName() + " at " + myPosition + " final dest : " + finalDestination);
+//                System.out.println(myAgent.getLocalName() + " at " + myPosition + " final dest : " + finalDestination);
                 List<String> next = ((BaseExplorerAgent) myAgent).getMap().getShortestPath(myPosition, finalDestination);
 
                 // get the next node from the path
@@ -137,12 +137,12 @@ public class UnblockBehaviour extends SimpleBehaviour
                 }
 
                 try {
-                    this.myAgent.doWait(1000);
+                    this.myAgent.doWait(200);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                System.out.println(myAgent.getLocalName() + " I'll try to move to " + nextMove);
+//                System.out.println(myAgent.getLocalName() + " I'll try to move to " + nextMove);
 
                 // Save the last position to detect locks
                 lastPosition = myPosition;

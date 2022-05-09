@@ -90,7 +90,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                     String currentPos = ((BaseExplorerAgent) this.myAgent).getCurrentPosition();
                     if(currentPos != ((BaseExplorerAgent) this.myAgent).getCurrentDest()) {
                         try {
-                            this.myAgent.doWait(1000);
+                            this.myAgent.doWait(200);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -174,7 +174,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                 ((BaseExplorerAgent) this.myAgent).setFull(true);
                 //Agent's job is done
                 ((BaseExplorerAgent) this.myAgent).setPhase(4);
-
+                (AbstractDedaleAgent)this.myAgent.
                 ((BaseExplorerAgent) this.myAgent).addBehaviourToBehaviourMap("randomWalk", new RandomWalkBehaviour((AbstractDedaleAgent) this.myAgent));
             }
         }
