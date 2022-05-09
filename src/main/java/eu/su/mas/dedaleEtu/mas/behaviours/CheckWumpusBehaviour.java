@@ -121,7 +121,7 @@ public class CheckWumpusBehaviour extends SimpleBehaviour {
                 e.printStackTrace();
             }
             // get the next node from the path
-            if (path.size() > 0) {
+            if (path != null && path.size() > 0) {
                 nextTry = path.get(0);
                 System.out.println("I'm in check i'll try to move to "+ nextTry);
                 lastPosition = myPosition;

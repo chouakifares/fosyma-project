@@ -242,7 +242,7 @@ public class CollectTreasureBehavior extends SimpleBehaviour {
                 }
             }
         }
-        if(mySpace!=0 && totalAvaiilableTreasures >= ((BaseExplorerAgent) this.myAgent).getSameTypeAgentBackPacks()*((BaseExplorerAgent) this.myAgent).getProp()){
+        if(mySpace!=0){
             List<String> temp = null;
             if(!packableTreasures.isEmpty()){
                 temp = packableTreasures;
